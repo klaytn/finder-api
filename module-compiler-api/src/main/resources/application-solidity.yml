@@ -1,0 +1,16 @@
+finder:
+  contract:
+    solidity:
+      compiler:
+        root-path: "/tmp/solidity"
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+finder:
+  contract:
+    solidity:
+      compiler:
+        s3-bucket: ${AWS_S3_PRIVATE_BUCKET}

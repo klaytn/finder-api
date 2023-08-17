@@ -1,0 +1,16 @@
+- index
+
+transaction_hash
+block_number
+block_hash
+contract_address
+fee_payer
+from
+to
+sender_tx_hash
+status
+type
+type_int        : think we can use this instead of "type"
+timestamp
+chain_id
+

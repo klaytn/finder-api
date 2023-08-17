@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: finder-oapi
+  main:
+    allow-bean-definition-overriding: true
+  messages:
+    basename: common/messages/messages
+    encoding: UTF-8
+  profiles:
+    active: prodBaobab
+    group:
+      stagBaobab: stag,stagBaobab
+      stagCypress: stag,stagCypress
+      prodBaobab: prod,prodBaobab
+      prodCypress: prod,prodCypress
+    include:
+      - actuator
+      - server
+      - web
+      - db
+      - db-set1
+      - db-set2
+      - db-set3
+      - db-set4
+      - aws
+      - redis
+      - springdoc
+      - chain
+      - kns
+      - images
+      - opensearch
+      - zookeeper
+      - settingmanager
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  devtools:
+    livereload:
+      enabled: true

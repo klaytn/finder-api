@@ -1,0 +1,20 @@
+finder:
+  clients:
+    http:
+      max-connections: 1000
+      connection-timeout-seconds: 3s
+      socket-timeout-seconds: 300s
+    urls:
+      coinmarketcap: https://pro-api.coinmarketcap.com/
+      signature: https://www.4byte.directory/
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+finder:
+  clients:
+    urls:
+      finder-baobab-papi: ${PAPI_API_BAOBAB_ENDPOINT}
+      finder-cypress-papi: ${PAPI_API_CYPRESS_ENDPOINT}

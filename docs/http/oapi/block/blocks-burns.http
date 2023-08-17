@@ -1,0 +1,10 @@
+### Information on klay Burning in the Latest Block
+GET {{server_address}}/api/v1/blocks/latest/burns
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### Information on klay Burning in a Specific Block
+GET {{server_address}}/api/v1/blocks/109066434/burns
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+

@@ -1,0 +1,36 @@
+opensearch:
+  finder:
+    http:
+      connection-request-timeout: 3s
+      connection-timeout: 3s
+      connection-time-to-live: 3s
+      socket-timeout: 3s
+      max-total-connections: 1000
+      max-connection-per-route: 1000
+---
+spring:
+  config:
+    activate:
+      on-profile: stagBaobab,prodBaobab
+
+opensearch:
+  finder:
+    hosts: ${OPEN_SEARCH_URL}
+    index:
+      account: baobab_account_v1
+      contract: baobab_contract_v1
+      transaction: baobab_transaction_v1
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stagCypress,prodCypress
+
+opensearch:
+  finder:
+    hosts: ${OPEN_SEARCH_URL}
+    index:
+      account: cypress_account_v1
+      contract: cypress_contract_v1
+      transaction: cypress_transaction_v1

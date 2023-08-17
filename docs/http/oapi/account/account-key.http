@@ -1,0 +1,16 @@
+### account key ( AccountKeyFail )
+GET {{server_address}}/api/v1/accounts/0x351db3d8c9c6a70f09545ea597be3f9ffde1affc
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### account key ( AccountKeyRoleBased )
+GET {{server_address}}/api/v1/accounts/0x76c8d6b029b80857f9b2f252be07a8dd2eb64c68
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### account key histories
+GET {{server_address}}/api/v1/accounts/0x76c8d6b029b80857f9b2f252be07a8dd2eb64c68/key-histories
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+

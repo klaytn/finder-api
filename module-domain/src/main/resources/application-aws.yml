@@ -1,0 +1,23 @@
+aws:
+  enabled: true
+  s3:
+    region: ${AWS_S3_REGION}
+    http-client:
+      max-connections: 1000
+      connection-timeout-seconds: 5
+      socket-timeout-seconds: 5
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+aws:
+  secrets-manager:
+    region: ${AWS_SECRETS_MANAGER_REGION}
+    arn: ${AWS_SECRETS_MANAGER_ARN}
+
+finder:
+  aws:
+    s3:
+      private-bucket: ${AWS_S3_PRIVATE_BUCKET}

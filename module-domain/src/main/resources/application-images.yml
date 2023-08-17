@@ -1,0 +1,16 @@
+finder:
+  images:
+    contract:
+      enabled: false
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+finder:
+  images:
+    contract:
+      enabled: true
+      s3-bucket: ${AWS_S3_PUBLIC_BUCKET}
+      url-prefix: ${AWS_CDN_URL}

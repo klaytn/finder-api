@@ -1,0 +1,25 @@
+FROM --platform=linux/x86_64 public.ecr.aws/y1e5c4k9/finder-base:1.0.0
+USER root
+
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+ENV TZ Asia/Seoul
+
+ENV APP_NAME finder-worker
+ENV ARTIFACT $APP_NAME.war
+
+ENV APP_HOME /klaytn/apps/$APP_NAME
+ENV APP_LOGS /klaytn/logs
+
+ARG VERSION
+ENV DD_VERSION ${VERSION}
+
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
+
+COPY ./module-worker/build/libs/$ARTIFACT .
+COPY ./libs/dd-java-agent.jar .
+
+USER klaytn
+
+#ENTRYPOINT exec java $JAVA_OPTS -Dsun.net.inetaddr.ttl=0 -javaagent:$APP_HOME/dd-java-agent.jar -XX:FlightRecorderOptions=stackdepth=256 -jar $APP_HOME/$ARTIFACT
+ENTRYPOINT exec java $JAVA_OPTS -Dsun.net.inetaddr.ttl=0 -XX:FlightRecorderOptions=stackdepth=256 -jar $APP_HOME/$ARTIFACT

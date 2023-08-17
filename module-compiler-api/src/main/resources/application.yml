@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: finder-compiler-api
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: local
+    include:
+      - actuator
+      - server
+      - web
+      - aws
+      - solidity
+      - springdoc
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  devtools:
+    livereload:
+      enabled: true

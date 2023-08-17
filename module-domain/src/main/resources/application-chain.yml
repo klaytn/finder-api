@@ -1,0 +1,52 @@
+finder:
+  chain:
+    caver:
+      connection-timeout-seconds: 2s
+      read-timeout-seconds: 3s
+      write-timeout-seconds: 3s
+      call-timeout-seconds: 3s
+---
+spring:
+  config:
+    activate:
+      on-profile: stagBaobab,prodBaobab
+
+finder:
+  chain:
+    type: "baobab"
+    hard-fork:
+      MAGMA: 98347376
+      KORE: 111736800
+    caver:
+      url: ${CAVER_BAOBAB_RPC_ENDPOINT}
+    block-mint-properties:
+      - start-block-number: 0
+        mint-value: 9.6
+      - start-block-number: 105840001
+        mint-value: 6.4
+    managed-address:
+      KGF: "0x2bcf9d3e4a846015e7e3152a614c684de16f37c6"
+      KIR: "0x716f89d9bc333286c79db4ebb05516897c8d208a"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: stagCypress,prodCypress
+
+finder:
+  chain:
+    type: "cypress"
+    hard-fork:
+      MAGMA: 99841497
+      KORE: 119750400
+    caver:
+      url: ${CAVER_CYPRESS_RPC_ENDPOINT}
+    block-mint-properties:
+      - start-block-number: 0
+        mint-value: 9.6
+      - start-block-number: 106444801
+        mint-value: 6.4
+    managed-address:
+      KGF: "0x278e6332d69eed782784d21802e3504a64a16456"
+      KIR: "0x3d803a7375a8ee5996f52a8d6725637a89f5bbf8"

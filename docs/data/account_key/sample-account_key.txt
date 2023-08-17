@@ -1,0 +1,178 @@
+Information to be exposed to UI
+** accounts/{address}
+   account-key-type, account-key
+** transactions/{transactionHash}
+   key, account-key-type, account-key
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 1) AccountKeyLegacy
+// ---------------------------------------------------------------------------------------------------------------------
+
+sample) transactions/0xfd1ed374d6180c93d30ce30fcc8bb8b7ac1ec239a21d6b38901c6dfded01e4eb
+"account_key": {
+    "type": "AccountKeyLegacy"
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 2) AccountKeyPublic
+// ---------------------------------------------------------------------------------------------------------------------
+
+sample) transactions/0xde7ad6431ba1d69d47b20481791aa4aef697970b286b7f7c67bfba273b980baa
+"account_key": {
+  "compressed_public_key": "0x02f47d65fe505e110ee8673c88335e4629a8d65d7f782c60145c0307fe7f3ef448",
+  "type": "AccountKeyPublic"
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 3) AccountKeyFail
+// ---------------------------------------------------------------------------------------------------------------------
+
+sample) accounts/0x351db3d8c9c6a70f09545ea597be3f9ffde1affc
+"account_key": {
+    "type": "AccountKeyFail"
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 4) AccountKeyWeightedMultiSig
+// ---------------------------------------------------------------------------------------------------------------------
+
+sample) transactions/0xcdf2bc727b1505dbd27bff89f55a2d9fe994846fc25d9403e45e74273681fafe
+"account_key": {
+    "threshold": 3,
+    "weighted_public_keys": [
+      {
+        "weight": 1,
+        "compressed_public_key": "0x0300af269e7a761bcdefd8aaff2b9006283a0f99620fae5beec8302321dfb1f878"
+      },
+      {
+        "weight": 1,
+        "compressed_public_key": "0x0298c1645e7518d5a0e8a63ccb8746945a893fbc7a91f442f7b25392d14cea4080"
+      },
+      {
+        "weight": 1,
+        "compressed_public_key": "0x027c511d1fd5422d521bfba77773e01f172017954e80dd336b50f184ebe994f892"
+      }
+    ],
+    "type": "AccountKeyWeightedMultiSig"
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 5) AccountKeyRoleBased
+// ---------------------------------------------------------------------------------------------------------------------
+
+sample) AccountKeyWeightedMultiSig,AccountKeyWeightedMultiSig,AccountKeyWeightedMultiSig
+        transactions/0x9668bcc39877ef3c1faf1f1620be461dc0e647f82007c7ad55634bd1282ead6f
+"account_key": {
+    "roles": {
+      "RoleTransaction": {
+        "threshold": 2,
+        "weighted_public_keys": [
+          {
+            "weight": 1,
+            "compressed_public_key": "0x0214ceaa402099d0f7a888e0c526458de2f70cc2cbde56ef88b84fa65823bff59a"
+          },
+          {
+            "weight": 1,
+            "compressed_public_key": "0x03acd507cfcec6342d4f59ba05a3fc1dbc2b4bb0d81c737d9a534b7c3dcd38b787"
+          }
+        ],
+        "type": "AccountKeyWeightedMultiSig"
+      },
+      "RoleAccountUpdate": {
+        "threshold": 1,
+        "weighted_public_keys": [
+          {
+            "weight": 1,
+            "compressed_public_key": "0x0214ceaa402099d0f7a888e0c526458de2f70cc2cbde56ef88b84fa65823bff59a"
+          },
+          {
+            "weight": 1,
+            "compressed_public_key": "0x03acd507cfcec6342d4f59ba05a3fc1dbc2b4bb0d81c737d9a534b7c3dcd38b787"
+          }
+        ],
+        "type": "AccountKeyWeightedMultiSig"
+      },
+      "RoleFeePayer": {
+        "threshold": 2,
+        "weighted_public_keys": [
+          {
+            "weight": 1,
+            "compressed_public_key": "0x0214ceaa402099d0f7a888e0c526458de2f70cc2cbde56ef88b84fa65823bff59a"
+          },
+          {
+            "weight": 1,
+            "compressed_public_key": "0x03acd507cfcec6342d4f59ba05a3fc1dbc2b4bb0d81c737d9a534b7c3dcd38b787"
+          }
+        ],
+        "type": "AccountKeyWeightedMultiSig"
+      }
+    },
+    "type": "AccountKeyRoleBased"
+}
+
+sample) AccountKeyWeightedMultiSig,AccountKeyWeightedMultiSig,AccountKeyPublic
+        transactions/0x4cbcbfa4f9a8ec4fdbddd048df2fe759a824bfd6a1c9475c97c395f0bd841979
+"account_key": {
+    "roles": {
+      "RoleTransaction": {
+        "threshold": 2,
+        "weighted_public_keys": [
+          {
+            "weight": 1,
+            "compressed_public_key": "0x02520aec37b778cdb3778287918f9f4b211d35ab5cf075549c5a2f5022d7e86a5e"
+          },
+          {
+            "weight": 1,
+            "compressed_public_key": "0x036f855ca5dc3e2225af17accf26bfe01255895b25ad04c8d8ee8165e7e3c54cd5"
+          },
+          {
+            "weight": 1,
+            "compressed_public_key": "0x02fa7df07830336bcd4bf1e78674c91a3c93ceb5a464e9b3f89a6715828632ba0d"
+          }
+        ],
+        "type": "AccountKeyWeightedMultiSig"
+      },
+      "RoleAccountUpdate": {
+        "threshold": 2,
+        "weighted_public_keys": [
+          {
+            "weight": 1,
+            "compressed_public_key": "0x02520aec37b778cdb3778287918f9f4b211d35ab5cf075549c5a2f5022d7e86a5e"
+          },
+          {
+            "weight": 1,
+            "compressed_public_key": "0x036f855ca5dc3e2225af17accf26bfe01255895b25ad04c8d8ee8165e7e3c54cd5"
+          },
+          {
+            "weight": 1,
+            "compressed_public_key": "0x02fa7df07830336bcd4bf1e78674c91a3c93ceb5a464e9b3f89a6715828632ba0d"
+          }
+        ],
+        "type": "AccountKeyWeightedMultiSig"
+      },
+      "RoleFeePayer": {
+        "compressed_public_key": "0x0304b56b106344d7c50c4a57c2a3e84d52db0f8fd0ecef22a2a004cffbc24902ff",
+        "type": "AccountKeyPublic"
+      }
+    },
+    "type": "AccountKeyRoleBased"
+}
+
+sample) AccountKeyFail,AccountKeyFail,AccountKeyPublic
+        transactions/0x0b8d0ed95f87f965f75f23760e6f816deb32e5a1bb7dad91e46d61eccc137b79
+"account_key": {
+    "roles": {
+      "RoleTransaction": {
+        "type": "AccountKeyFail"
+      },
+      "RoleAccountUpdate": {
+        "type": "AccountKeyFail"
+      },
+      "RoleFeePayer": {
+        "compressed_public_key": "0x03df6beef5ae15d96f10ab6bfb29c3b8078d951982d4eeb25de4edc0536cc44dd4",
+        "type": "AccountKeyPublic"
+      }
+    },
+    "type": "AccountKeyRoleBased"
+}
+

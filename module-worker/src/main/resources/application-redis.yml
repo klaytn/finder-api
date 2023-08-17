@@ -1,0 +1,20 @@
+spring:
+  redis:
+    client-type: lettuce
+    connect-timeout: 3s
+    timeout: 10000ms
+    lettuce:
+      cluster:
+        refresh:
+          period: 30s
+      pool:
+        max-idle: 50
+        min-idle: 50
+        max-active: 50
+        max-wait: 500ms
+---
+spring:
+  config.activate.on-profile: stag,prod
+  redis:
+    cluster:
+      nodes: ${REDIS_ENDPOINT}

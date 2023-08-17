@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <property
+    name="LOG_PATTERN"
+    value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %X{span_id:--} %X{userId:--} %-5level %logger{36}:\\(%line\\) %M - %msg%n"
+  />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender
+    name="ROLLING"
+    class="ch.qos.logback.core.rolling.RollingFileAppender"
+  >
+        <file>${APP_LOGS}/webapp.log</file>
+        <encoder>
+            <pattern
+      >[%d{yyyy-MM-dd HH:mm:ss}] [%p] [%C{1}] %M \(%L\): %m%n</pattern>
+        </encoder>
+        <rollingPolicy
+      class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"
+    >
+            <fileNamePattern>logs/webapp.log.%i</fileNamePattern>
+            <maxIndex>10</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy
+      class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"
+    >
+            <maxFileSize>50MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <springProfile name="dev">
+        <logger name="io.klaytn" additivity="false" level="DEBUG">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLING" />
+        </logger>
+
+        <logger
+      name="org.springframework.web.servlet.DispatcherServlet"
+      additivity="false"
+      level="DEBUG"
+    >
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLING" />
+        </logger>
+
+        <logger name="org.hibernate.SQL" additivity="false" level="DEBUG">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLING" />
+        </logger>
+
+        <logger name="org.hibernate.stat" additivity="false" level="DEBUG">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLING" />
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLING" />
+        </root>
+    </springProfile>
+
+    <springProfile name="stag,prod">
+        <logger name="io.klaytn" additivity="false" level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLING" />
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="ROLLING" />
+        </root>
+    </springProfile>
+</configuration>

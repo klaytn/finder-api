@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: finder-worker
+  main:
+    allow-bean-definition-overriding: true
+  messages:
+    basename: messages/messages
+    encoding: UTF-8
+  profiles:
+    include:
+      - actuator
+      - server
+      - web
+      - aws
+      - redis
+      - client
+      - springdoc
+      - zookeeper
+      - settingmanager
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false

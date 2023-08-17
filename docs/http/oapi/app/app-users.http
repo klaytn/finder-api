@@ -1,0 +1,34 @@
+### List of Keys Owned by App Users
+GET {{server_address}}/api/v1/app-users/keys
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### Query the Number of Requests Assigned to App Users
+GET {{server_address}}/api/v1/app-users/request-quotas
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### Query the Number of Requests Made by App Users So Far
+GET {{server_address}}/api/v1/app-users/request-quotas/used
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### Query the Number of Remaining Requests for App Users
+GET {{server_address}}/api/v1/app-users/request-quotas/remaining
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### Query the Number of Exceeded Requests by App Users
+GET {{server_address}}/api/v1/app-users/request-quotas/over-used
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### Query the Daily Usage of App Users in the Last 7 Weeks
+GET {{server_address}}/api/v1/app-users/request-stats/daily
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### Query the Monthly Usage of App Users in the Last Year
+GET {{server_address}}/api/v1/app-users/request-stats/monthly
+Accept: application/json
+Authorization: Bearer {{auth_key}}

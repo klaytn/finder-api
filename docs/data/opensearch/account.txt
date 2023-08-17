@@ -1,0 +1,102 @@
+- index
+
+address
+type
+contract_type
+contract_creator_address
+contract_creator_transactionHash
+kns_domain
+address_label
+tags : json ( string list )
+
+POST _reindex?wait_for_completion=false
+{
+  "source": {
+    "index": "cypress_account_v1"
+  },
+  "dest": {
+    "index": "cypress_account_v2"
+  }
+}
+
+DELETE /cypress_account_v2
+
+PUT /cypress_account_v2
+{
+    "settings" : {
+      "index" : {
+        "max_ngram_diff" : "8",
+        "refresh_interval" : "1s",
+        "number_of_shards" : "3",
+        "analysis" : {
+          "analyzer" : {
+            "ngram_lowercase_analyzer" : {
+              "filter" : [ "lowercase" ],
+              "tokenizer" : "ngram_tokenizer"
+            }
+          },
+          "tokenizer" : {
+            "ngram_tokenizer" : {
+              "type" : "ngram",
+              "min_gram" : "2",
+              "max_gram" : "10"
+            }
+          }
+        },
+        "number_of_replicas" : "1"
+      }
+    },
+    "mappings" : {
+      "dynamic" : "false",
+      "properties" : {
+        "address" : {
+          "type" : "keyword"
+        },
+        "address_label" : {
+          "type" : "text",
+          "analyzer" : "ngram_lowercase_analyzer",
+          "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }          
+        },
+        "balance" : {
+          "type" : "double"
+        },
+        "contract_creator_address" : {
+          "type" : "keyword"
+        },
+        "contract_creator_tx_hash" : {
+          "type" : "keyword"
+        },
+        "contract_type" : {
+          "type" : "integer"
+        },
+        "kns_domain" : {
+          "type" : "text",
+          "analyzer" : "ngram_lowercase_analyzer",
+          "fields": {
+            "raw": { 
+              "type":  "keyword"
+            }
+          }          
+        },
+        "tags" : {
+          "type" : "keyword",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword"
+            
+          }
+        },
+        "type" : {
+          "type" : "integer"
+        },
+        "updated_at" : {
+          "type" : "date",
+          "format" : "epoch_millis"
+        }
+      }
+    }
+}

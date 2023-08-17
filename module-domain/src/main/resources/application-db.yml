@@ -1,0 +1,38 @@
+spring:
+  db:
+    common-property:
+      datasource:
+        url-prefix: jdbc:mysql
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: stored_in_secret_manager
+        password: stored_in_secret_manager
+        connection-timeout: 3000
+      hibernate:
+        ddl-auto: validate
+        generate-statistics: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  db:
+    common-property:
+      hibernate:
+        ddl-auto: validate
+        generate-statistics: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+  db:
+    common-property:
+      hibernate:
+        ddl-auto: validate
+        generate-statistics: false

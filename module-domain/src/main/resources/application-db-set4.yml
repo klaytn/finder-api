@@ -1,0 +1,32 @@
+spring:
+  db:
+    set04:
+      datasource:
+        driver-class-name: ${spring.db.common-property.datasource.driver-class-name}
+        username: ${spring.db.common-property.datasource.username}
+        password: ${spring.db.common-property.datasource.password}
+        connection-timeout: ${spring.db.common-property.datasource.connection-timeout}
+      jpa:
+        database: mysql
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+        show-sql: true
+        properties:
+          hibernate:
+            format_sql: true
+            globally_quoted_identifiers: true
+            globally_quoted_identifiers_skip_column_definitions: true
+            generate_statistics: ${spring.db.common-property.hibernate.generate-statistics}
+      hibernate:
+        ddl-auto: ${spring.db.common-property.hibernate.ddl-auto}
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+  db:
+    set04:
+      datasource:
+        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_COMMON_ENDPOINT}:3306/finder_common?serverTimezone=UTC
+        pool-name: finder-common
+        maximum-pool-size: 20

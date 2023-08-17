@@ -1,0 +1,20 @@
+finder:
+  clients:
+    http:
+      max-connections: 1000
+      connection-timeout-seconds: 3s
+      socket-timeout-seconds: 60s
+    urls:
+      contract-compiler: ${COMPILER_API_ENDPOINT}
+      square-api: https://square-api.klaytn.foundation
+      square-web: https://square.klaytn.foundation
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+finder:
+  clients:
+    urls:
+      contract-compiler: ${COMPILER_API_ENDPOINT}

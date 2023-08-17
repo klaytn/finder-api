@@ -1,0 +1,23 @@
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+management:
+  endpoint:
+    health:
+      show-details: never

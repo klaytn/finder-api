@@ -1,0 +1,50 @@
+{
+  "from": 0,
+  "size": 20,
+  "_source": true,
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "bool": {
+            "must": [
+              {
+                "range": {
+                  "timestamp": {
+                    "from": 1640962800,
+                    "to": 1643641199,
+                    "include_lower": true,
+                    "include_upper": true
+                  }
+                }
+              },
+              {
+                "term": {
+                  "from": {
+                    "value": "0x03df007bdefb6c81190fe474dbab5971bf434e11"
+                  }
+                }
+              }
+            ],
+            "adjust_pure_negative": true,
+            "boost": 1
+          }
+        }
+      ],
+      "adjust_pure_negative": true,
+      "boost": 1
+    }
+  },
+  "sort": [
+    {
+      "block_number": {
+        "order": "desc"
+      }
+    },
+    {
+      "transaction_index": {
+        "order": "desc"
+      }
+    }
+  ]
+}

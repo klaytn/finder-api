@@ -1,0 +1,12 @@
+springdoc:
+  swagger-ui:
+    path: swagger-ui
+    operations-sorter: alpha
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+

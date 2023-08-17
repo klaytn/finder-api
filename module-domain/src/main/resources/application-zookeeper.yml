@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    zookeeper:
+      config:
+        import-check:
+          enabled: false
+      session-timeout: 20s
+      connection-timeout: 20s
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+  cloud:
+    zookeeper:
+      connect-string: ${ZOOKEEPER_ENDPOINT}

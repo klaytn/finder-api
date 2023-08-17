@@ -1,0 +1,31 @@
+error:
+  invalid_request:
+    title: invalid request
+    message: "Requested parameter is not valid. ({0})"
+  forbidden:
+    title: unauthorized access
+    message: Please confirm your authority.
+  unauthorized_access:
+    title: unauthorized access
+    message: Please confirm your authority.
+  not_found_resource:
+    title: invalid request
+    message: The requested resource does not exist.
+  internal_server_error:
+    title: server error
+    message: An error occurred inside the server.
+  service_unavailable:
+    title: server error
+    message: The service is temporarily unavailable. Please try again in a moment.
+  maintenance:
+    title: maintenance of the server
+    message: "{0}"
+  not_found_url:
+    title: invalid request
+    message: "The url({0}) does not exists."
+  not_implemented:
+    title: invalid request
+    message: The function is not yet supported.
+  invalid_contract_submission:
+    title: invalid contract submission
+    message: "{0}"

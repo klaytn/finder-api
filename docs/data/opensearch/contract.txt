@@ -1,0 +1,13 @@
+- index
+
+contract_address
+contract_type
+search_type         : 0(token), 1(nft)
+name
+symbol
+verified
+
+created_at
+updated_at
+total_supply    : db 의 total_supploy_order
+total_transfer

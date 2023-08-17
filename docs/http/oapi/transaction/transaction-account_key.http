@@ -1,0 +1,29 @@
+### AccountKeyLegacy
+GET {{server_address}}/api/v1/transactions/0xfd1ed374d6180c93d30ce30fcc8bb8b7ac1ec239a21d6b38901c6dfded01e4eb
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### AccountKeyPublic
+GET {{server_address}}/api/v1/transactions/0xde7ad6431ba1d69d47b20481791aa4aef697970b286b7f7c67bfba273b980baa
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### AccountKeyWeightedMultiSig
+GET {{server_address}}/api/v1/transactions/0xcdf2bc727b1505dbd27bff89f55a2d9fe994846fc25d9403e45e74273681fafe
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### AccountKeyRoleBased ( AccountKeyWeightedMultiSig,AccountKeyWeightedMultiSig,AccountKeyWeightedMultiSig )
+GET {{server_address}}/api/v1/transactions/0x9668bcc39877ef3c1faf1f1620be461dc0e647f82007c7ad55634bd1282ead6f
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### AccountKeyRoleBased ( AccountKeyWeightedMultiSig,AccountKeyWeightedMultiSig,AccountKeyPublic )
+GET {{server_address}}/api/v1/transactions/0x4cbcbfa4f9a8ec4fdbddd048df2fe759a824bfd6a1c9475c97c395f0bd841979
+Accept: application/json
+Authorization: Bearer {{auth_key}}
+
+### AccountKeyRoleBased ( AccountKeyFail,AccountKeyFail,AccountKeyPublic )
+GET {{server_address}}/api/v1/transactions/0x0b8d0ed95f87f965f75f23760e6f816deb32e5a1bb7dad91e46d61eccc137b79
+Accept: application/json
+Authorization: Bearer {{auth_key}}

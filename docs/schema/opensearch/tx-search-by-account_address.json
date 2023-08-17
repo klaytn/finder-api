@@ -1,0 +1,89 @@
+{
+  "from": 0,
+  "size": 20,
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "type_int": {
+              "value": 49,
+              "boost": 1.0
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "bool": {
+                  "filter": [
+                    {
+                      "term": {
+                        "from": {
+                          "value": "0x2968c66f14308673c12812febfa58cfe87c4e5a8",
+                          "boost": 1.0
+                        }
+                      }
+                    },
+                    {
+                      "term": {
+                        "to": {
+                          "value": "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654",
+                          "boost": 1.0
+                        }
+                      }
+                    }
+                  ],
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
+                }
+              },
+              {
+                "bool": {
+                  "filter": [
+                    {
+                      "term": {
+                        "to": {
+                          "value": "0x2968c66f14308673c12812febfa58cfe87c4e5a8",
+                          "boost": 1.0
+                        }
+                      }
+                    },
+                    {
+                      "term": {
+                        "from": {
+                          "value": "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654",
+                          "boost": 1.0
+                        }
+                      }
+                    }
+                  ],
+                  "adjust_pure_negative": true,
+                  "boost": 1.0
+                }
+              }
+            ],
+            "adjust_pure_negative": true,
+            "boost": 1.0
+          }
+        }
+      ],
+      "adjust_pure_negative": true,
+      "boost": 1.0
+    }
+  },
+  "_source": false,
+  "sort": [
+    {
+      "block_number": {
+        "order": "desc"
+      }
+    },
+    {
+      "transaction_index": {
+        "order": "desc"
+      }
+    }
+  ]
+}
