@@ -34,7 +34,7 @@ class ClientConfig(
                             requestHeaders =
                                     mapOf(
                                             "X-CMC_PRO_API_KEY" to
-                                                    ""
+                                            clientProperties.keys["coinmarketcap"]!!
                                     )
                     )
             )
@@ -99,6 +99,7 @@ class ClientConfig(
 data class ClientProperties(
         val http: ClientHttpProperties,
         val urls: Map<String, String> = mapOf(),
+        val keys: Map<String, String> = mapOf(),
 ) {
     data class ClientHttpProperties(
             val maxConnections: Int,

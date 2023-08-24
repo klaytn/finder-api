@@ -7,6 +7,8 @@ finder:
     urls:
       coinmarketcap: https://pro-api.coinmarketcap.com/
       signature: https://www.4byte.directory/
+    keys:
+      coinmarketcap: "${CMC_PRO_API_KEY}"
 ---
 spring:
   config:

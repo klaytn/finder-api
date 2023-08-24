@@ -40,3 +40,6 @@ export COMPILER_API_ENDPOINT=
 export PAPI_API_CYPRESS_ENDPOINT=
 # @example https://test-baobab-papi.domain <- no '/'
 export PAPI_API_BAOBAB_ENDPOINT=
+
+
+export CMC_PRO_API_KEY=
