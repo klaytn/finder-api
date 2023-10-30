@@ -1,4 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  io.klaytn.commons.aws.autoconfigure.AwsAutoConfiguration
-org.springframework.boot.env.EnvironmentPostProcessor=\
-  io.klaytn.commons.aws.secretsmanager.SecretManagerPropertyProcessor
+  io.klaytn.commons.aws.autoconfigure.GcpAutoConfiguration

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.web.client.RestTemplate
-import software.amazon.awssdk.services.s3.S3Client
+import com.google.cloud.storage.Storage
 
 @Configuration
 class RedisConsumerConfig {
@@ -38,14 +38,14 @@ class RedisConsumerConfig {
     fun httpNftTokenUriRequestRedisConsumerListener(
         redisTemplate: RedisTemplate<String, NftTokenUriContentRefreshRequest>,
         restTemplate: RestTemplate,
-        s3Client: S3Client,
+        gcsClient: Storage,
         finderS3Properties: FinderS3Properties,
         redisKeyManagerForWorker: RedisKeyManagerForWorker,
     ) =
         RedisConsumerListener(
             redisConsumer = HttpNftTokenUriContentRefreshRequestRedisConsumer(redisTemplate,
                 restTemplate,
-                s3Client,
+                gcsClient,
                 finderS3Properties.privateBucket,
                 redisKeyManagerForWorker),
             shutdownWaitTimeMs = 5000,
@@ -55,14 +55,14 @@ class RedisConsumerConfig {
     fun ipfsNftTokenUriRequestRedisConsumerListener(
     redisTemplate: RedisTemplate<String, NftTokenUriContentRefreshRequest>,
     ipfs: IPFS,
-    s3Client: S3Client,
+    gcsClient: Storage,
     finderS3Properties: FinderS3Properties,
     redisKeyManagerForWorker: RedisKeyManagerForWorker,
     ) =
         RedisConsumerListener(
             redisConsumer = IpfsNftTokenUriContentRefreshRequestRedisConsumer(redisTemplate,
                 ipfs,
-                s3Client,
+                gcsClient,
                 finderS3Properties.privateBucket,
                 redisKeyManagerForWorker),
             shutdownWaitTimeMs = 5000,
@@ -72,14 +72,14 @@ class RedisConsumerConfig {
     fun solidifyCompilerUploadRedisConsumerListener(
         redisTemplate: RedisTemplate<String, SolidityCompilerUploadRequest>,
         restTemplate: RestTemplate,
-        s3Client: S3Client,
+        gcsClient: Storage,
         finderS3Properties: FinderS3Properties,
         redisKeyManagerForWorker: RedisKeyManagerForWorker,
     ) =
         RedisConsumerListener(
             redisConsumer = SolidifyCompilerUploadRedisConsumer(redisTemplate,
                 restTemplate,
-                s3Client,
+                gcsClient,
                 finderS3Properties.privateBucket,
                 redisKeyManagerForWorker),
             shutdownWaitTimeMs = 5000,

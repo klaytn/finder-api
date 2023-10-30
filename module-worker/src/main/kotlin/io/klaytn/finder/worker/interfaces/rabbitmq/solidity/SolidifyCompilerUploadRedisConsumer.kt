@@ -7,16 +7,17 @@ import org.springframework.dao.QueryTimeoutException
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.RestTemplate
-import software.amazon.awssdk.core.sync.RequestBody
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.time.Duration
+import com.google.cloud.storage.Storage
+import com.google.cloud.storage.BlobInfo
+
+
 
 class SolidifyCompilerUploadRedisConsumer(
     private val redisTemplate: RedisTemplate<String, SolidityCompilerUploadRequest>,
     private val restTemplate: RestTemplate,
-    private val s3Client: S3Client,
-    private val s3BucketName: String,
+    private val gcsClient: Storage,
+    private val gcsBucketName: String,
     private val redisKeyManagerForWorker: RedisKeyManagerForWorker
 ) : RedisConsumer() {
     private val logger = logger(this::class.java)
@@ -37,12 +38,9 @@ class SolidifyCompilerUploadRedisConsumer(
                     restTemplate.execute(url, HttpMethod.GET, null, { response ->
                         if(response.statusCode.is2xxSuccessful) {
                             logger.info("[download from git] : $url")
-                            val contentLength = response.headers.contentLength
-                            val objectRequest = PutObjectRequest.builder()
-                                .bucket(s3BucketName)
-                                .key("compiler/$osPath/$buildPath")
-                                .build()
-                            s3Client.putObject(objectRequest, RequestBody.fromInputStream(response.body, contentLength))
+                            val path = "compiler/$osPath/$buildPath"
+                            val blobInfo = BlobInfo.newBuilder(gcsBucketName, path).build()
+                            gcsClient.create(blobInfo, response.body)
                             logger.info("[upload to s3] : $url")
                         } else {
                             logger.warn("[download fail from git] : $url")

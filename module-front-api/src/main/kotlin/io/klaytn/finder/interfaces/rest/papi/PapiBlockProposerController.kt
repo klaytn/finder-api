@@ -21,17 +21,14 @@ import org.springframework.util.FileCopyUtils
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-import software.amazon.awssdk.services.s3.S3AsyncClient
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import com.google.cloud.storage.Storage
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException
-import software.amazon.awssdk.transfer.s3.S3TransferManager
-import software.amazon.awssdk.transfer.s3.model.UploadDirectoryRequest
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.FileWriter
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -43,8 +40,8 @@ import java.util.concurrent.atomic.AtomicInteger
 @Tag(name = SwaggerConstant.TAG_PRIVATE)
 class PapiBlockProposerController(
     private val set1DataSource: HikariDataSource,
-    private val s3Client: S3Client,
-    private val s3AsyncClient: S3AsyncClient,
+    private val gcsClient: Storage,
+//    private val gcsAsyncClient: Storage,
     private val chainProperties: ChainProperties,
     private val finderS3Properties: FinderS3Properties,
     private val blockRewardDelegator: BlockRewardDelegator
@@ -230,16 +227,17 @@ class PapiBlockProposerController(
             }
             writeBlockRewardToFile(sourceFile, counter, fileCheckMap)
 
-            val transferManager = S3TransferManager.builder().s3Client(s3AsyncClient).build()
-            val directoryUpload = transferManager.uploadDirectory(
-                UploadDirectoryRequest
-                    .builder()
-                    .bucket(finderS3Properties.privateBucket)
-                    .s3Prefix("finder/${chainProperties.type}/proposed-blocks/csv/$yearMonth/")
-                    .source(Path.of(tempRootPath))
-                    .build())
-            logger.info("${directoryUpload.completionFuture().get()}")
-
+            // GCP
+            val bucket = gcsClient.get(finderS3Properties.privateBucket)
+            val path = "finder/${chainProperties.type}/proposed-blocks/csv/$yearMonth/"
+            val inputStream = Files.newInputStream(Path.of(tempRootPath))
+            val blob = bucket.create(
+                path,
+                inputStream,
+                "text/csv",
+            )
+            inputStream.close()
+            logger.info("${blob.name} upload complete.")
         } catch (e: Exception) {
             logger.warn(e.message, e)
         } finally {
@@ -254,12 +252,12 @@ class PapiBlockProposerController(
         try {
             val filename = "temp_${yearMonth}.csv.part_00000"
             val key = "finder/${chainProperties.type}/proposed-blocks/source/$filename"
-            val getObjectRequest = GetObjectRequest.builder().bucket(finderS3Properties.privateBucket).key(key).build()
-            val getObjectResponse = s3Client.getObject(getObjectRequest)
 
+            // gcp
+            val getObjectResponse = gcsClient.get(finderS3Properties.privateBucket).get(key)
             val tempFile = File.createTempFile("temp_", ".csv")
             val tempFileOutputStream = FileOutputStream(tempFile)
-            FileCopyUtils.copy(getObjectResponse, tempFileOutputStream)
+            FileCopyUtils.copy(getObjectResponse.getContent(), tempFileOutputStream)
             tempFileOutputStream.close()
             return tempFile
         } catch (_: NoSuchKeyException) {

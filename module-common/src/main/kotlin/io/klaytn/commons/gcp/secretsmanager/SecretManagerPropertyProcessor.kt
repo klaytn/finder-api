@@ -16,17 +16,17 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
 import java.time.Duration
 
-class SecretManagerPropertyProcessorDeprecated : EnvironmentPostProcessor {
+class SecretManagerPropertyProcessor : EnvironmentPostProcessor {
     override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication?) {
-        if ("true" != environment.getProperty("aws.enabled", "true")) {
+        if ("true" != environment.getProperty("gcp.enabled", "true")) {
             return
         }
 
         val credentialsProvider = createCredentialsProvider(environment)
         val httpClientProperties = createHttpClientProperties(environment)
 
-        val region = environment.getProperty("aws.secrets-manager.region")
-        val arn = environment.getProperty("aws.secrets-manager.arn")
+        val region = environment.getProperty("gcp.secrets-manager.region")
+        val arn = environment.getProperty("gcp.secrets-manager.arn")
 
         if (region.isNullOrBlank() || arn.isNullOrBlank()) {
             return

@@ -27,7 +27,7 @@ class SolidityCompilerTest {
 
     @Test
     fun test() {
-        compile("/Treasury.sol", "0.8.9+commit.e5eed63a", true, 200)
+        compile("/EntryPoint.sol", "0.8.17+commit.8df45f5f", true, 1000000)
     }
 
     private fun compile(path: String, version: String, optimize: Boolean, optimizeRuns: Long) {

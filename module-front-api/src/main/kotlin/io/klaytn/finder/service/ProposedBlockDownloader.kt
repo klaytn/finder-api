@@ -1,17 +1,17 @@
 package io.klaytn.finder.service
 
+import com.google.cloud.storage.BlobId
+import com.google.cloud.storage.Storage
 import io.klaytn.commons.utils.logback.logger
 import io.klaytn.finder.config.ChainProperties
-import io.klaytn.finder.config.FinderS3Properties
+import io.klaytn.finder.config.FinderGcsProperties
 import io.klaytn.finder.domain.mysql.set1.BlockReward
 import io.klaytn.finder.domain.mysql.set1.ProposerBlock
 import io.klaytn.finder.infra.utils.DateUtils
 import io.klaytn.finder.infra.utils.KlayUtils
 import org.springframework.stereotype.Service
 import org.springframework.util.FileCopyUtils
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.GetObjectRequest
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException
+import java.io.IOException
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
@@ -19,11 +19,11 @@ import java.text.SimpleDateFormat
 
 @Service
 class ProposedBlockDownloader(
-    private val s3Client: S3Client,
+    private val gcsClient: Storage,
     private val blockService: BlockService,
     private val blockRewardDelegator: BlockRewardDelegator,
     private val chainProperties: ChainProperties,
-    private val finderS3Properties: FinderS3Properties,
+    private val finderGcsProperties: FinderGcsProperties,
 ) {
     private val logger = logger(this::class.java)
     private val dateformat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -33,25 +33,24 @@ class ProposedBlockDownloader(
             return
         }
 
-        if(!downloadFromS3(accountAddress, date, outputStream)) {
+        if(!downloadFromGcs(accountAddress, date, outputStream)) {
             downloadFromDB(accountAddress, date, outputStream)
         }
     }
 
     /**
-     * s3://AWS_S3_PRIVATE_BUCKET/finder/cypress/proposed-blocks/csv/
+     * gs://AWS_S3_PRIVATE_BUCKET/finder/cypress/proposed-blocks/csv/
      */
-    private fun downloadFromS3(accountAddress: String, date: String, outputStream: OutputStream): Boolean {
+    private fun downloadFromGcs(accountAddress: String, date: String, outputStream: OutputStream): Boolean {
         try {
             val filename = "proposed_blocks_${date}_$accountAddress.csv"
             val key = "finder/${chainProperties.type}/proposed-blocks/csv/$date/$filename"
-            val getObjectRequest = GetObjectRequest.builder().bucket(finderS3Properties.privateBucket).key(key).build()
-            val getObjectResponse = s3Client.getObject(getObjectRequest)
-
-            FileCopyUtils.copy(getObjectResponse, outputStream)
+            val blobId = BlobId.of(finderGcsProperties.privateBucket, key)
+            val blob = gcsClient.get(blobId)
+            FileCopyUtils.copy(blob.getContent(), outputStream)
             return true
-        } catch (noSuchKeyException: NoSuchKeyException) {
-            logger.debug(noSuchKeyException.message, noSuchKeyException)
+        } catch (ioException: IOException) {
+            logger.debug(IOException::class.java.simpleName, ioException)
         }
         return false
     }
