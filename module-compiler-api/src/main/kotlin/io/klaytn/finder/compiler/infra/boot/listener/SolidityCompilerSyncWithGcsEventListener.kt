@@ -7,7 +7,7 @@ import io.klaytn.finder.compiler.service.SolidityDownloaderFromGcs
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.stereotype.Component
 
-/**
+    /**
  * Synchronizes the list stored in S3 before the service starts up.
  */
 @Component

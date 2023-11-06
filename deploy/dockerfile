@@ -1,0 +1,25 @@
+FROM --platform=linux/x86_64 asia-northeast3-docker.pkg.dev/klaytn-finder/finder-base:1.0.0
+USER root
+
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+ENV TZ Asia/Seoul
+
+
+ARG MODULE_NAME
+ARG WAR_NAME
+
+ENV APP_NAME finder-$MODULE_NAME
+ENV ARTIFACT $WAR_NAME.war
+
+ENV APP_HOME /klaytn/apps/$APP_NAME
+ENV APP_LOGS /klaytn/logs
+
+RUN mkdir -p $APP_HOME
+RUN mkdir -p /tmp
+WORKDIR $APP_HOME
+
+COPY ./$MODULE_NAME/build/libs/$ARTIFACT .
+
+USER klaytn
+
+ENTRYPOINT exec java $JAVA_OPTS -Dsun.net.inetaddr.ttl=0 -XX:FlightRecorderOptions=stackdepth=256 -jar $APP_HOME/$ARTIFACT
