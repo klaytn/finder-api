@@ -4,7 +4,7 @@ import com.zaxxer.hikari.HikariDataSource
 import io.klaytn.commons.model.response.SimpleResponse
 import io.klaytn.commons.utils.logback.logger
 import io.klaytn.finder.config.ChainProperties
-import io.klaytn.finder.config.FinderS3Properties
+import io.klaytn.finder.config.FinderGcsProperties
 import io.klaytn.finder.infra.ServerMode
 import io.klaytn.finder.infra.utils.DateUtils
 import io.klaytn.finder.infra.utils.KlayUtils
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import com.google.cloud.storage.Storage
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -43,7 +42,7 @@ class PapiBlockProposerController(
     private val gcsClient: Storage,
 //    private val gcsAsyncClient: Storage,
     private val chainProperties: ChainProperties,
-    private val finderS3Properties: FinderS3Properties,
+    private val finderGcsProperties: FinderGcsProperties,
     private val blockRewardDelegator: BlockRewardDelegator
 ) {
     private val logger = logger(this::class.java)
@@ -228,7 +227,7 @@ class PapiBlockProposerController(
             writeBlockRewardToFile(sourceFile, counter, fileCheckMap)
 
             // GCP
-            val bucket = gcsClient.get(finderS3Properties.privateBucket)
+            val bucket = gcsClient.get(finderGcsProperties.privateBucket)
             val path = "finder/${chainProperties.type}/proposed-blocks/csv/$yearMonth/"
             val inputStream = Files.newInputStream(Path.of(tempRootPath))
             val blob = bucket.create(
@@ -254,13 +253,14 @@ class PapiBlockProposerController(
             val key = "finder/${chainProperties.type}/proposed-blocks/source/$filename"
 
             // gcp
-            val getObjectResponse = gcsClient.get(finderS3Properties.privateBucket).get(key)
+            val getObjectResponse = gcsClient.get(finderGcsProperties.privateBucket).get(key)
             val tempFile = File.createTempFile("temp_", ".csv")
             val tempFileOutputStream = FileOutputStream(tempFile)
             FileCopyUtils.copy(getObjectResponse.getContent(), tempFileOutputStream)
             tempFileOutputStream.close()
             return tempFile
-        } catch (_: NoSuchKeyException) {
+        } catch (_: Exception) {
+            logger.warn("[$yearMonth] not found.")
         }
         return null
     }

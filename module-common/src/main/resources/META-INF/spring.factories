@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  io.klaytn.commons.aws.autoconfigure.GcpAutoConfiguration
+  io.klaytn.commons.gcp.autoconfigure.GcpAutoConfiguration

@@ -27,17 +27,17 @@ class ContractImageService(
             }
 
             if (finderContractImageProperties.enabled) {
-                val s3Bucket = finderContractImageProperties.s3Bucket!!
+                val gcsBucket = finderContractImageProperties.gcsBucket!!
                 val urlPrefix = finderContractImageProperties.urlPrefix!!
 
                 val fileExt = FilenameUtils.getExtension(it.originalFilename)
                 val filename = "${contractAddress}_${System.currentTimeMillis()}.$fileExt"
                 val s3RelativeFilePath = "finder/static/img/contract/${chainProperties.type}/$filename"
-                val blob = gcsClient.get(s3Bucket, s3RelativeFilePath)
+                val blob = gcsClient.get(gcsBucket, s3RelativeFilePath)
                 if (blob != null) {
                     throw InvalidContractSubmissionException("token image already exists.")
                 } else {
-                    val blobInfo = BlobInfo.newBuilder(s3Bucket, s3RelativeFilePath)
+                    val blobInfo = BlobInfo.newBuilder(gcsBucket, s3RelativeFilePath)
                         .setContentType(tokenImage.contentType)
                         .build()
                     gcsClient.create(blobInfo, it.bytes)
@@ -60,6 +60,6 @@ class ContractImageService(
 @ConfigurationProperties(prefix = "finder.images.contract")
 data class FinderContractImageProperties(
     val enabled: Boolean,
-    val s3Bucket: String?,
+    val gcsBucket: String?,
     val urlPrefix: String?,
 )

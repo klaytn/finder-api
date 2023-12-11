@@ -3,7 +3,7 @@ package io.klaytn.finder.worker.config
 import io.ipfs.api.IPFS
 import io.klaytn.commons.redis.consumer.RedisConsumerListener
 import io.klaytn.commons.redis.consumer.RedisConsumerListenerManager
-import io.klaytn.finder.config.FinderS3Properties
+import io.klaytn.finder.config.FinderGcsProperties
 import io.klaytn.finder.domain.redis.NftTokenUriContentRefreshRequest
 import io.klaytn.finder.domain.redis.NftTokenUriRefreshRequest
 import io.klaytn.finder.worker.infra.client.FinderPrivateApiClient
@@ -39,14 +39,14 @@ class RedisConsumerConfig {
         redisTemplate: RedisTemplate<String, NftTokenUriContentRefreshRequest>,
         restTemplate: RestTemplate,
         gcsClient: Storage,
-        finderS3Properties: FinderS3Properties,
+        finderGcsProperties: FinderGcsProperties,
         redisKeyManagerForWorker: RedisKeyManagerForWorker,
     ) =
         RedisConsumerListener(
             redisConsumer = HttpNftTokenUriContentRefreshRequestRedisConsumer(redisTemplate,
                 restTemplate,
                 gcsClient,
-                finderS3Properties.privateBucket,
+                finderGcsProperties.privateBucket,
                 redisKeyManagerForWorker),
             shutdownWaitTimeMs = 5000,
             concurrentThreadCount = 5)
@@ -56,14 +56,14 @@ class RedisConsumerConfig {
     redisTemplate: RedisTemplate<String, NftTokenUriContentRefreshRequest>,
     ipfs: IPFS,
     gcsClient: Storage,
-    finderS3Properties: FinderS3Properties,
+    finderGcsProperties: FinderGcsProperties,
     redisKeyManagerForWorker: RedisKeyManagerForWorker,
     ) =
         RedisConsumerListener(
             redisConsumer = IpfsNftTokenUriContentRefreshRequestRedisConsumer(redisTemplate,
                 ipfs,
                 gcsClient,
-                finderS3Properties.privateBucket,
+                finderGcsProperties.privateBucket,
                 redisKeyManagerForWorker),
             shutdownWaitTimeMs = 5000,
             concurrentThreadCount = 5)
@@ -73,14 +73,14 @@ class RedisConsumerConfig {
         redisTemplate: RedisTemplate<String, SolidityCompilerUploadRequest>,
         restTemplate: RestTemplate,
         gcsClient: Storage,
-        finderS3Properties: FinderS3Properties,
+        finderGcsProperties: FinderGcsProperties,
         redisKeyManagerForWorker: RedisKeyManagerForWorker,
     ) =
         RedisConsumerListener(
             redisConsumer = SolidifyCompilerUploadRedisConsumer(redisTemplate,
                 restTemplate,
                 gcsClient,
-                finderS3Properties.privateBucket,
+                finderGcsProperties.privateBucket,
                 redisKeyManagerForWorker),
             shutdownWaitTimeMs = 5000,
             concurrentThreadCount = 5)

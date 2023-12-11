@@ -39,7 +39,7 @@ class ProposedBlockDownloader(
     }
 
     /**
-     * gs://AWS_S3_PRIVATE_BUCKET/finder/cypress/proposed-blocks/csv/
+     * gs://GCS_PRIVATE_BUCKET/finder/cypress/proposed-blocks/csv/
      */
     private fun downloadFromGcs(accountAddress: String, date: String, outputStream: OutputStream): Boolean {
         try {

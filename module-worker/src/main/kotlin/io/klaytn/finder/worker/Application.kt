@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Import
     value = [
         ApplicationConfig::class,
         MessageConfig::class,
-        AwsS3Config::class,
+        GcpStorageConfig::class,
         RedisBaseConfig::class,
         JobConfig::class,
         ServerConfig::class,

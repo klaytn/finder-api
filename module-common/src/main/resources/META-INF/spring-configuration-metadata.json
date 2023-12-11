@@ -1,137 +1,30 @@
 {
   "groups": [
     {
-      "name": "aws",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsProperties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsProperties"
-    },
-    {
-      "name": "aws.credentials",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsCredentialsProperties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsProperties",
-      "sourceMethod": "getCredentials()"
-    },
-    {
-      "name": "aws.s3",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsS3Properties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsProperties",
-      "sourceMethod": "getS3()"
-    },
-    {
-      "name": "aws.s3.http-client",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsS3Properties",
-      "sourceMethod": "getHttpClient()"
-    },
-    {
-      "name": "aws.ses",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsSesProperties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsProperties",
-      "sourceMethod": "getSes()"
-    },
-    {
-      "name": "aws.ses.http-client",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsSesProperties",
-      "sourceMethod": "getHttpClient()"
-    },
-    {
-      "name": "aws.secrets-manager",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsSecretsManagerProperties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsProperties",
-      "sourceMethod": "getSecretsManager()"
-    },
-    {
-      "name": "aws.secrets-manager.http-client",
-      "type": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsSecretsManagerProperties",
-      "sourceMethod": "getHttpClient()"
+      "name": "gcp",
+      "type": "io.klaytn.commons.gcp.autoconfigure.GcpProperties",
+      "sourceType": "io.klaytn.commons.gcp.autoconfigure.GcpProperties"
     }
   ],
   "properties": [
     {
-      "name": "aws.enabled",
+      "name": "gcp.enabled",
       "type": "java.lang.Boolean",
-      "description": "AWS support enabled.",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsProperties",
+      "description": "GCP support enabled.",
+      "sourceType": "io.klaytn.commons.gcp.autoconfigure.GcpProperties",
       "defaultValue": true
     },
     {
-      "name": "aws.credentials.access-key",
+      "name": "gcp.projectId",
       "type": "java.lang.String",
-      "description": "AWS accessKey",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsCredentialsProperties"
+      "description": "GCP projectId",
+      "sourceType": "io.klaytn.commons.gcp.autoconfigure.GcpProperties"
     },
     {
-      "name": "aws.credentials.secret-key",
+      "name": "gcp.region",
       "type": "java.lang.String",
-      "description": "AWS secretKey",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsCredentialsProperties"
-    },
-    {
-      "name": "aws.s3.region",
-      "type": "java.lang.String",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsS3Properties"
-    },
-    {
-      "name": "aws.s3.http-client.max-connections",
-      "type": "java.lang.Integer",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.s3.http-client.connection-timeout-seconds",
-      "type": "java.time.Duration",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.s3.http-client.socket-timeout-seconds",
-      "type": "java.time.Duration",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.ses.region",
-      "type": "java.lang.String",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsSesProperties"
-    },
-    {
-      "name": "aws.ses.http-client.max-connections",
-      "type": "java.lang.Integer",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.ses.http-client.connection-timeout-seconds",
-      "type": "java.time.Duration",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.ses.http-client.socket-timeout-seconds",
-      "type": "java.time.Duration",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.secrets-manager.arn",
-      "type": "java.lang.String",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsSecretsManagerProperties"
-    },
-    {
-      "name": "aws.secrets-manager.region",
-      "type": "java.lang.String",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsSecretsManagerProperties"
-    },
-    {
-      "name": "aws.secrets-manager.http-client.max-connections",
-      "type": "java.lang.Integer",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.secrets-manager.http-client.connection-timeout-seconds",
-      "type": "java.time.Duration",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
-    },
-    {
-      "name": "aws.secrets-manager.http-client.socket-timeout-seconds",
-      "type": "java.time.Duration",
-      "sourceType": "io.klaytn.commons.aws.autoconfigure.AwsHttpClientProperties"
+      "description": "GCP region",
+      "sourceType": "io.klaytn.commons.gcp.autoconfigure.GcpProperties"
     }
   ],
   "hints": []
