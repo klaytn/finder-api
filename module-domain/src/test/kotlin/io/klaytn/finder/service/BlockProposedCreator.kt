@@ -68,7 +68,7 @@ class BlockProposedCreator {
                         order by
                             number asc
                         INTO OUTFILE S3
-                            's3://AWS_S3_PRIVATE_BUCKET/finder/cypress/proposed-blocks/source/temp_${yearMonth}.cvs'
+                            's3://GCS_PRIVATE_BUCKET/finder/cypress/proposed-blocks/source/temp_${yearMonth}.cvs'
                         FORMAT CSV OVERWRITE ON
                     """.trimIndent()
                         ).execute()

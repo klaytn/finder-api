@@ -17,6 +17,7 @@ import org.opensearch.search.sort.FieldSortBuilder
 import org.opensearch.search.sort.SortOrder
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
+import org.opensearch.common.unit.TimeValue
 
 class AccountSearchClient(
     private val restHighLevelClient: RestHighLevelClient,
@@ -91,6 +92,7 @@ class AccountSearchClient(
                 .fetchSource(false)
                 .query(queryBuilder)
                 .from(simplePageRequest.offset())
+                .timeout(TimeValue.timeValueSeconds(5))
                 .size(simplePageRequest.size)
                 .sort(FieldSortBuilder(AccountFieldType.UPDATED_AT.fieldName).order(SortOrder.DESC))
         )

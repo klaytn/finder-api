@@ -48,7 +48,7 @@ class NftTokenUriRefreshRequestTest {
     /**
         SELECT contract_address, token_id  FROM nft_inventories
         where contract_address='0x0892ed3424851d2bab4ac1091fa93c9851eb5d7d'
-        INTO OUTFILE S3 's3://AWS_S3_PRIVATE_BUCKET/finder/cypress/nft_inventories.cvs'
+        INTO OUTFILE S3 's3://GCS_PRIVATE_BUCKET/finder/cypress/nft_inventories.cvs'
         FORMAT CSV OVERWRITE ON;
      */
 //    @Test

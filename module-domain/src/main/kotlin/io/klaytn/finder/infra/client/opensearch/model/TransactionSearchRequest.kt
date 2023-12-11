@@ -17,6 +17,7 @@ import org.opensearch.search.sort.FieldSortBuilder
 import org.springdoc.api.annotations.ParameterObject
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.format.annotation.DateTimeFormat.ISO
+import org.opensearch.common.unit.TimeValue
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -100,6 +101,7 @@ data class TransactionSearchRequest(
             .fetchSource(false)
             .query(query)
             .from(transactionSearchPageRequest.offset())
+            .timeout(TimeValue.timeValueSeconds(5))
             .size(transactionSearchPageRequest.size)
         sortFields.map { searchSourceBuilder.sort(it) }
 

@@ -14,7 +14,7 @@ CREATE TABLE `event_logs`
     `created_at`        datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'created date',
     `updated_at`        datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT 'modified date',
     PRIMARY KEY (`id`),
-    KEY `ix_transactionhash_logindex` (`transaction_hash`, `log_index`),
+    UNIQUE KEY `ix_transactionhash_logindex` (`transaction_hash`,`log_index`) USING BTREE,
     KEY `ix_transactionhash_signature_logindex` (`transaction_hash`, `signature`, `log_index` DESC), -- new index
     KEY `ix_signature` (`signature`),
     KEY `ix_address_blocknumber_transactionindex_logindex`
@@ -63,7 +63,7 @@ CREATE TABLE `token_transfers`
     KEY `ix_from_contractaddress_blocknumber_displayorder` (`from`, `contract_address`, `block_number` DESC, `display_order` DESC),
     KEY `ix_to_blocknumber_displayorder` (`to`, `block_number` DESC, `display_order` DESC),
     KEY `ix_to_contractaddress_blocknumber_displayorder` (`to`, `contract_address`, `block_number` DESC, `display_order` DESC),
-    KEY `ix_transactionhash_displayorder` (`transaction_hash`, `display_order` DESC)
+    UNIQUE KEY `ix_transactionhash_displayorder` (`transaction_hash`,`display_order`) USING BTREE,
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -85,7 +85,7 @@ CREATE TABLE `token_burns`
     KEY `ix_contractaddress_displayorder` (`contract_address`, `display_order` DESC),
     KEY `ix_contractaddress_from_displayorder` (`contract_address`, `from`, `display_order` DESC),
     KEY `ix_contractaddress_to_displayorder` (`contract_address`, `to`, `display_order` DESC),
-    KEY `ix_contractaddress_transactionhash_displayorder` (`contract_address`, `transaction_hash`, `display_order` DESC),
+    UNIQUE KEY `ix_contractaddress_transactionhash_displayorder` (`contract_address`,`transaction_hash`,`display_order`) USING BTREE,
     KEY `ix_contractaddress_blocknumber_displayorder` (`contract_address`, `block_number` DESC, `display_order` DESC)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -162,7 +162,7 @@ CREATE TABLE `nft_transfers`
     KEY `ix_from_contractaddress_blocknumber_displayorder` (`from`, `contract_address`, `block_number` DESC, `display_order` DESC),
     KEY `ix_to_blocknumber_displayorder` (`to`, `block_number` DESC, `display_order` DESC),
     KEY `ix_to_contractaddress_blocknumber_displayorder` (`to`, `contract_address`, `block_number` DESC, `display_order` DESC),
-    KEY `ix_transactionhash_displayorder` (`transaction_hash`, `display_order` DESC),
+    UNIQUE KEY `ix_transactionhash_displayorder` (`transaction_hash`,`display_order`) USING BTREE,
     KEY `ix_to_contracttype_blocknumber_displayorder` (`to`, `contract_type`, `block_number`, `display_order`),
     KEY `ix_from_contracttype_blocknumber_displayorder` (`from`, `contract_type`, `block_number`, `display_order`)
 ) ENGINE = InnoDB
@@ -233,7 +233,7 @@ CREATE TABLE `nft_burns`
     KEY `ix_contractaddress_tokenid_displayorder` (`contract_address`, `token_id`, `display_order` DESC),
     KEY `ix_contractaddress_tokenid_from_displayorder` (`contract_address`, `token_id`, `from`, `display_order` DESC),
     KEY `ix_contractaddress_tokenid_to_displayorder` (`contract_address`, `token_id`, `to`, `display_order` DESC),
-    KEY `ix_contractaddress_transactionhash_displayorder` (`contract_address`, `transaction_hash`, `display_order` DESC)
+    UNIQUE KEY `ix_contractaddress_transactionhash_displayorder` (`contract_address`,`transaction_hash`,`display_order`) USING BTREE,
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

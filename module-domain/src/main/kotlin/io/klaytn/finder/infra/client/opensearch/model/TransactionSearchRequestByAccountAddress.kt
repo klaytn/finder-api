@@ -13,6 +13,7 @@ import org.opensearch.search.builder.SearchSourceBuilder
 import org.opensearch.search.sort.FieldSortBuilder
 import org.springdoc.api.annotations.ParameterObject
 import javax.validation.constraints.NotBlank
+import org.opensearch.common.unit.TimeValue
 
 @ParameterObject
 data class TransactionSearchRequestByAccountAddress(
@@ -46,6 +47,7 @@ data class TransactionSearchRequestByAccountAddress(
             .fetchSource(false)
             .query(query)
             .from(transactionSearchPageRequest.offset())
+            .timeout(TimeValue.timeValueSeconds(5))
             .size(transactionSearchPageRequest.size)
         sortFields.map { searchSourceBuilder.sort(it) }
 

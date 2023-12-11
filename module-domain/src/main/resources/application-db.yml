@@ -3,16 +3,15 @@ spring:
     common-property:
       datasource:
         url-prefix: jdbc:mysql
+        url-suffix: '?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull'
         driver-class-name: com.mysql.cj.jdbc.Driver
-        username: stored_in_secret_manager
-        password: stored_in_secret_manager
+        username: ${MYSQL_USER}
+        password: ${MYSQL_PASSWORD}
         connection-timeout: 3000
       hibernate:
         ddl-auto: validate
         generate-statistics: true
-
 ---
-
 spring:
   config:
     activate:
@@ -23,9 +22,7 @@ spring:
       hibernate:
         ddl-auto: validate
         generate-statistics: true
-
 ---
-
 spring:
   config:
     activate:

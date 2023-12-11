@@ -8,6 +8,7 @@ import io.klaytn.finder.infra.web.swagger.SwaggerConstant
 import io.klaytn.finder.interfaces.rest.api.view.mapper.nft.NftHolderToAccountNftBalanceListViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.mapper.nft.NftTransferToListViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.mapper.token.TokenHolderToTokenBalanceListViewMapper
+import io.klaytn.finder.interfaces.rest.api.view.mapper.token.TokenHolderToTokenDetailListViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.mapper.token.TokenTransferToListViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.model.nft.NftTransferListView
 import io.klaytn.finder.interfaces.rest.api.view.model.token.TokenTransferListView
@@ -37,6 +38,7 @@ class AccountTokenController(
     private val tokenTransferToListViewMapper: TokenTransferToListViewMapper,
     private val nftTransferToListViewMapper: NftTransferToListViewMapper,
     private val tokenHolderToTokenBalanceListViewMapper: TokenHolderToTokenBalanceListViewMapper,
+    private val tokenHolderToTokenDetailListViewMapper: TokenHolderToTokenDetailListViewMapper,
     private val nftHolderToAccountNftBalanceListViewMapper: NftHolderToAccountNftBalanceListViewMapper,
 ) {
     // -- --------------------------------------------------------------------------------------------------------------
@@ -82,6 +84,15 @@ class AccountTokenController(
         tokenService.getTokenBalancesByHolder(
             accountService.checkAndGetAddress(accountAddress), simplePageRequest),
         tokenHolderToTokenBalanceListViewMapper)
+
+    @GetMapping("/api/v1/accounts/{accountAddress}/token-details")
+        fun getAccountFungibleTokenDetails(
+            @PathVariable accountAddress: String,
+            @Valid simplePageRequest: SimplePageRequest
+        ) = ScopePage.of(
+            tokenService.getTokenBalancesByHolder(
+                accountService.checkAndGetAddress(accountAddress), simplePageRequest),
+                tokenHolderToTokenDetailListViewMapper)
 
     // -- --------------------------------------------------------------------------------------------------------------
     // -- nfts

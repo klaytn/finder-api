@@ -3,6 +3,7 @@ package io.klaytn.finder.service
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.klaytn.finder.config.dynamic.FinderServerFeatureConfig
+import io.klaytn.finder.config.ChainProperties
 import io.klaytn.finder.infra.redis.RedisKeyManager
 import io.klaytn.finder.infra.utils.DateUtils
 import io.klaytn.finder.infra.utils.KlayUtils
@@ -26,6 +27,7 @@ class FinderHomeService(
     private val redisKeyManager: RedisKeyManager,
     private val blockBurntToViewMapper: BlockBurntToViewMapper,
     private val finderServerFeatureConfig: FinderServerFeatureConfig,
+    private val chainProperties: ChainProperties,
 ) {
     private val defaultKlayPrice = "0.0"
 
@@ -68,7 +70,7 @@ class FinderHomeService(
 
     fun getStatus(blockNo: Long, blockTimestamp: Int): FinderStatus {
         val blockBurnView = blockService.getBlockBurn(blockNo)?.let {
-            blockBurntToViewMapper.transform(it)
+            blockBurntToViewMapper.transform(it, chainProperties.getKIP103BurntAmount())
         }
 
         return FinderStatus(

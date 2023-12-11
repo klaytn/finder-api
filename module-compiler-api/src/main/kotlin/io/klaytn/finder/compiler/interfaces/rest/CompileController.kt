@@ -21,6 +21,9 @@ class CompileController(
     private val solidityCompiler: SolidityCompiler,
     private val solidityBuildFileManager: SolidityBuildFileManager,
 ) {
+    @GetMapping("/")
+    fun healthCheck() = "OK"
+
     @GetMapping("/options")
     fun options(): OptionResult {
         val licenses = License.values().map { it.text }

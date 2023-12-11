@@ -11,15 +11,17 @@ export MYSQL_CYPRESS_03_ENDPOINT=
 export MYSQL_BAOBAB_03_ENDPOINT=
 export MYSQL_COMMON_ENDPOINT=
 
+export MYSQL_USER=
+export MYSQL_PASSWORD=
 
-export AWS_S3_REGION=
-export AWS_SECRETS_MANAGER_ARN=
-export AWS_SECRETS_MANAGER_REGION=
+export GOOGLE_APPLICATION_CREDENTIALS=
+export GCP_PROJECT_ID=
+export GCP_REGION=
 # BUCKET NAME @example: klaytn-prod-finder-private
-export AWS_S3_PRIVATE_BUCKET=
+export GCS_PRIVATE_BUCKET=
 # BUCKET NAME @example: klaytn-prod-finder-public
-export AWS_S3_PUBLIC_BUCKET=
-export AWS_CDN_URL=
+export GCS_PUBLIC_BUCKET=
+export GCP_CDN_URL=
 
 # RPC Endpoint
 export CAVER_CYPRESS_RPC_ENDPOINT=
