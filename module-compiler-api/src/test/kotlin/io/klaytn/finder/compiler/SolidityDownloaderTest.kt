@@ -5,7 +5,6 @@ import io.klaytn.finder.compiler.service.SolidityDownloaderFromGcs
 import io.klaytn.finder.compiler.service.SolidityDownloaderFromGit
 import org.junit.jupiter.api.Test
 import org.springframework.web.client.RestTemplate
-import software.amazon.awssdk.regions.Region
 import com.google.cloud.storage.StorageOptions
 
 import java.io.File
@@ -24,7 +23,7 @@ class SolidityDownloaderTest {
     fun downloadWithS3() {
         val os = SolidityDownloader.Os.check() ?: return
         val gcsClient = StorageOptions.newBuilder().setProjectId("klaytn-finder").build().service
-        val downloader = SolidityDownloaderFromGcs(gcsClient, "AWS_S3_PRIVATE_BUCKET", File("/tmp/solidity"))
+        val downloader = SolidityDownloaderFromGcs(gcsClient, "GCS_PRIVATE_BUCKET", File("/tmp/solidity"))
         downloader.getList(os).forEach {
             downloader.download(os, it)
         }
