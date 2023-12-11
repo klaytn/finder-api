@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
+import io.klaytn.finder.config.ChainProperties
 
 @Profile(ServerMode.API_MODE)
 @RestController
@@ -39,7 +40,8 @@ class BlockController(
     val transactionToListViewMapper: TransactionToListViewMapper,
     val internalTransactionToListViewMapper: InternalTransactionToListViewMapper,
     val blockBurntToViewMapper: BlockBurntToViewMapper,
-    val blockRewardToViewMapper: BlockRewardToViewMapper
+    val blockRewardToViewMapper: BlockRewardToViewMapper,
+    val chainProperties: ChainProperties
 ) {
     @Operation(
         description = "Retrieve a list of blocks.",
@@ -76,7 +78,7 @@ class BlockController(
     @GetMapping("/api/v1/blocks/{blockNumber}/burns")
     fun getBlockBurns(
         @PathVariable blockNumber: Long,
-    ) = blockService.getBlockBurn(blockNumber)?.let { blockBurntToViewMapper.transform(it) }
+    ) = blockService.getBlockBurn(blockNumber)?.let { blockBurntToViewMapper.transform(it, chainProperties.getKIP103BurntAmount()) }
         ?: throw NotFoundBlockBurntException()
 
     @Operation(

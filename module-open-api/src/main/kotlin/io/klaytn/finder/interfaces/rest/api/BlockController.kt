@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
+import io.klaytn.finder.config.ChainProperties
 
 @RestController
 @Tag(name = SwaggerConstant.TAG_PUBLIC)
@@ -39,7 +40,8 @@ class BlockController(
     private val transactionToListViewMapper: TransactionToListViewMapper,
     private val internalTransactionToListViewMapper: InternalTransactionToListViewMapper,
     private val blockBurntToViewMapper: BlockBurntToViewMapper,
-    private val blockRewardToViewMapper: BlockRewardToViewMapper
+    private val blockRewardToViewMapper: BlockRewardToViewMapper,
+    private val chainProperties: ChainProperties
 ) {
     @GetMapping("/api/v1/blocks")
     fun getBlocks(
@@ -94,7 +96,7 @@ class BlockController(
     fun getBlockBurns(
         @PathVariable blockNumber: Long,
     ) =
-        blockService.getBlockBurn(blockNumber)?.let { blockBurntToViewMapper.transform(it) }
+        blockService.getBlockBurn(blockNumber)?.let { blockBurntToViewMapper.transform(it, chainProperties.getKIP103BurntAmount()) }
             ?: throw NotFoundBlockBurntException()
 
     @Operation(
