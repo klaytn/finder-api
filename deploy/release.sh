@@ -1,6 +1,7 @@
 DOCKER_REGISTRY=asia-northeast3-docker.pkg.dev
+REPO_NAME="finder-prod"
 GIT_BRANCH=$(git branch --show-current)
-PROJECT_ID=klaytn-fider
+PROJECT_ID=klaytn-finder
 
 function main() {
     PS3="Select target: "
@@ -8,22 +9,18 @@ function main() {
     do
         case $target in
             "front-api")
-                REPO_NAME="front-api"
                 WAR_NAME="finder-api"
                 break
                 ;;
             "open-api")
-                REPO_NAME="open-api"
                 WAR_NAME="finder-oapi"
                 break
                 ;;
             "compiler-api")
-                REPO_NAME="compiler-api"
                 WAR_NAME="finder-compiler-api"
                 break
                 ;;
             "worker")
-                REPO_NAME="worker"
                 WAR_NAME="finder-worker"
                 break
                 ;;
@@ -63,7 +60,7 @@ function main() {
     echo "Phase: $phase"
     echo "War: $WAR_NAME"
     echo "Image: $VERSION"
-    echo "Location: $DOCKER_REGISTRY/$PROJECT_ID/$REPO_NAME/$VERSION"
+    echo "Location: $DOCKER_REGISTRY/$PROJECT_ID/$REPO_NAME/$WAR_NAME:$VERSION"
     echo "-----------------------------"
 
     while true; do
@@ -78,14 +75,14 @@ function main() {
     if [[ $phase == "local" ]]
     then
         source ./conf.sh
-        sudo -E java $JAVA_OPTS -Dsun.net.inetaddr.ttl=0 -DAPP_LOGS=./logs/prod-$target -Dspring.profiles.active="prod,prodBaobab,all,devAuthToken" -jar $MODULE_NAME/build/libs/$WAR_NAME.war
+        sudo -E java $JAVA_OPTS -Dsun.net.inetaddr.ttl=0 -DAPP_LOGS=./logs/prod-$target -Dspring.profiles.active="prod,prodCypress,devAuthToken" -jar $MODULE_NAME/build/libs/$WAR_NAME.war
         exit 0
     else
         gcloud auth configure-docker $DOCKER_REGISTRY
-        sudo docker build --build-arg MODULE_NAME="$MODULE_NAME" WAR_NAME="$WAR_NAME" -f ./dockerfile -t $DOCKER_REGISTRY/$PROJECT_ID/$REPO_NAME/$VERSION .
-        docker push $DOCKER_REGISTRY/$PROJECT_ID/$REPO_NAME/$VERSION
+        sudo docker build --build-arg MODULE_NAME="$MODULE_NAME" --build-arg WAR_NAME="$WAR_NAME" -f ./deploy/Dockerfile -t $DOCKER_REGISTRY/$PROJECT_ID/$REPO_NAME/$WAR_NAME:$VERSION .
+        docker push $DOCKER_REGISTRY/$PROJECT_ID/$REPO_NAME/$WAR_NAME:$VERSION
     fi
-    
+
 }
 
 
