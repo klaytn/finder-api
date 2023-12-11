@@ -27,6 +27,6 @@ spring:
   db:
     set04:
       datasource:
-        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_COMMON_ENDPOINT}:3306/finder_common?serverTimezone=UTC
+        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_COMMON_ENDPOINT}:3306/finder_common?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
         pool-name: finder-common
         maximum-pool-size: 20
