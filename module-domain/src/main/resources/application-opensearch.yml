@@ -1,10 +1,10 @@
 opensearch:
   finder:
     http:
-      connection-request-timeout: 3s
-      connection-timeout: 3s
-      connection-time-to-live: 3s
-      socket-timeout: 3s
+      connection-request-timeout: 10s
+      connection-timeout: 10s
+      connection-time-to-live: 10s
+      socket-timeout: 10s
       max-total-connections: 1000
       max-connection-per-route: 1000
 ---
