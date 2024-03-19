@@ -73,6 +73,14 @@ data class ChainProperties(
 
     fun isDynamicFeeTarget(blockNumber: Long) =
             isInHardForkRange(ChainHardFortType.MAGMA, blockNumber)
+
+    fun getKIP103BurntAmount(): BigDecimal {
+        return if ("cypress".equals(type, true)) {
+            BigDecimal("5296324269.908256422492837664")
+        } else {
+            BigDecimal("128249714.762680629675260179")
+        }
+    }
 }
 
 data class ChainBlockMintProperty(val startBlockNumber: Long, val mintValue: BigDecimal)

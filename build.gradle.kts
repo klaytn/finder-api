@@ -65,7 +65,7 @@ subprojects {
     val jacksonVersion by extra { "2.13.3" }
     val retrofit2Version by extra { "2.9.0" }
     val resilience4jVersion by extra { "1.7.1" }
-    val awsSdkVersion by extra { "2.19.8" }
+    val googleCloudSdkVersion by extra { "1.2.3.RELEASE" }
     val junitJupiterVersion by extra { "5.8.2" }
     val junitPlatformVersion by extra { "1.8.2" }
     val mockitoVersion by extra { "4.6.1" }
@@ -136,14 +136,13 @@ subprojects {
         implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
         api("com.nimbusds:nimbus-jose-jwt:9.23")
 
-        api("software.amazon.awssdk:sts:$awsSdkVersion")
-        api("software.amazon.awssdk:s3:$awsSdkVersion")
-        api("software.amazon.awssdk:s3-transfer-manager:$awsSdkVersion")
-        api("software.amazon.awssdk:sso:$awsSdkVersion")
-        api("software.amazon.awssdk:ses:$awsSdkVersion")
-        api("software.amazon.awssdk:apache-client:$awsSdkVersion")
-        api("software.amazon.awssdk:secretsmanager:$awsSdkVersion")
-        api("software.amazon.awssdk.crt:aws-crt:0.20.5")
+        // gcp
+        api("org.springframework.cloud:spring-cloud-gcp-starter:$googleCloudSdkVersion")
+        api("org.springframework.cloud:spring-cloud-gcp-starter-sql-mysql:$googleCloudSdkVersion")
+        api("org.springframework.cloud:spring-cloud-gcp-starter-storage:$googleCloudSdkVersion")
+        api("org.springframework.cloud:spring-cloud-gcp-starter-secretmanager:$googleCloudSdkVersion")
+
+
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")

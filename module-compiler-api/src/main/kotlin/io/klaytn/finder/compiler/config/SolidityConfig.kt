@@ -1,15 +1,15 @@
 package io.klaytn.finder.compiler.config
 
+import com.google.cloud.storage.Storage
 import io.klaytn.finder.compiler.service.SolidityBuildFileManager
 import io.klaytn.finder.compiler.service.SolidityCompiler
 import io.klaytn.finder.compiler.service.SolidityDownloaderFromGit
-import io.klaytn.finder.compiler.service.SolidityDownloaderFromS3
+import io.klaytn.finder.compiler.service.SolidityDownloaderFromGcs
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.client.RestTemplate
-import software.amazon.awssdk.services.s3.S3Client
 import java.io.File
 
 @Configuration
@@ -22,10 +22,10 @@ class SolidityConfig {
         SolidityCompiler(solidityBuildFileManager)
 
     @Bean
-    fun solidityDownloaderFromS3(s3Client: S3Client, solidityProperties: SolidityProperties) =
-        SolidityDownloaderFromS3(
-            s3Client = s3Client,
-            s3bucket = solidityProperties.compiler.s3Bucket,
+    fun solidityDownloaderFromGcs(gcsClient: Storage, solidityProperties: SolidityProperties) =
+        SolidityDownloaderFromGcs(
+            gcsClient = gcsClient,
+            gcsBucket = solidityProperties.compiler.gcsBucket,
             parentDir = solidityProperties.compiler.rootPath)
 
     @Bean
@@ -41,7 +41,7 @@ data class SolidityProperties(
     val compiler: CompilerProperty,
 ) {
     data class CompilerProperty(
-        val s3Bucket: String,
+        val gcsBucket: String,
         val rootPath: File,
     )
 }

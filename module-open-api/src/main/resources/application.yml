@@ -1,4 +1,11 @@
 spring:
+  cloud:
+    gcp:
+      credentials:
+        location: ${GOOGLE_APPLICATION_CREDENTIALS}
+      sql:
+        enabled: false
+      project-id: ${GCP_PROJECT_ID}
   application:
     name: finder-oapi
   main:
@@ -22,7 +29,7 @@ spring:
       - db-set2
       - db-set3
       - db-set4
-      - aws
+      - gcp
       - redis
       - springdoc
       - chain
@@ -31,9 +38,7 @@ spring:
       - opensearch
       - zookeeper
       - settingmanager
-
 ---
-
 spring:
   config:
     activate:

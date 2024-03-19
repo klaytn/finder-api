@@ -11,6 +11,7 @@ import org.opensearch.index.query.RangeQueryBuilder
 import org.opensearch.search.builder.SearchSourceBuilder
 import org.opensearch.search.sort.FieldSortBuilder
 import org.springdoc.api.annotations.ParameterObject
+import org.opensearch.common.unit.TimeValue
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -72,6 +73,7 @@ data class ContractSearchRequest(
                 .fetchSource(false)
                 .query(query)
                 .from(contractSearchPageRequest.offset())
+                .timeout(TimeValue.timeValueSeconds(10))
                 .size(contractSearchPageRequest.size)
                 .sort(sort)
         )

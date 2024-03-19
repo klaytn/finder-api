@@ -8,16 +8,15 @@ import org.springframework.dao.QueryTimeoutException
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.web.client.RestTemplate
-import software.amazon.awssdk.core.sync.RequestBody
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import com.google.cloud.storage.Storage
+import com.google.cloud.storage.BlobInfo
 import java.time.Duration
 
 class HttpNftTokenUriContentRefreshRequestRedisConsumer(
     private val redisTemplate: RedisTemplate<String, NftTokenUriContentRefreshRequest>,
     private val restTemplate: RestTemplate,
-    private val s3Client: S3Client,
-    private val s3BucketName: String,
+    private val gcsClient: Storage,
+    private val gcsBucketName: String,
     private val redisKeyManagerForWorker: RedisKeyManagerForWorker
 ) : RedisConsumer() {
     private val logger = logger(this::class.java)
@@ -36,14 +35,10 @@ class HttpNftTokenUriContentRefreshRequestRedisConsumer(
                         restTemplate.execute(nftTokenRequest.tokenUri, HttpMethod.GET, null, { response ->
                             if(response.statusCode.is2xxSuccessful) {
                                 logger.info("[download] : $nftTokenRequest.tokenUri")
-
-                                val objectRequest = PutObjectRequest.builder()
-                                    .bucket(s3BucketName)
-                                    .key("finder/${nftTokenRequest.chain}/nft-inventory-contents/${nftTokenRequest.contractAddress}/${nftTokenRequest.tokenId}")
-                                    .build()
-
-                                s3Client.putObject(objectRequest, RequestBody.fromBytes(response.body.readBytes()))
-                                logger.info("[upload to s3] : $nftTokenRequest.tokenUri")
+                                val path = "finder/${nftTokenRequest.chain}/nft-inventory-contents/${nftTokenRequest.contractAddress}/${nftTokenRequest.tokenId}"
+                                val blobInfo = BlobInfo.newBuilder(gcsBucketName, path).build()
+                                gcsClient.create(blobInfo, response.body.readBytes())
+                                logger.info("[upload to gcs] : $nftTokenRequest.tokenUri")
                             } else {
                                 logger.warn("[download fail] : $nftTokenRequest.tokenUri")
                             }

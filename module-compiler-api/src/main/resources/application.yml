@@ -1,4 +1,12 @@
 spring:
+  cloud:
+    gcp:
+      credentials:
+        location: ${GOOGLE_APPLICATION_CREDENTIALS}
+      sql:
+        enabled: false
+      project-id: ${GCP_PROJECT_ID}
+
   application:
     name: finder-compiler-api
   main:
@@ -9,12 +17,10 @@ spring:
       - actuator
       - server
       - web
-      - aws
+      - gcp
       - solidity
       - springdoc
-
 ---
-
 spring:
   config:
     activate:

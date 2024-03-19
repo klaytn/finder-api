@@ -1,0 +1,14 @@
+gcp:
+  enabled: true
+  projectId: ${GCP_PROJECT_ID}
+  region: ${GCP_REGION}
+---
+spring:
+  config:
+    activate:
+      on-profile: stag,prod
+
+finder:
+  gcp:
+    storage:
+      private-bucket: ${GCS_PRIVATE_BUCKET}

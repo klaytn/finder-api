@@ -7,16 +7,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
-import software.amazon.awssdk.core.sync.RequestBody
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import com.google.cloud.storage.Storage
+import com.google.cloud.storage.BlobInfo
 import java.util.*
 
 @Component
 class ContractImageService(
     private val finderContractImageProperties: FinderContractImageProperties,
     private val chainProperties: ChainProperties,
-    private val s3Client: S3Client,
+    private val gcsClient: Storage,
 ) {
     private val supportedImageMineType = listOf("image/png", "image/svg+xml")
     private val supportedImageMaxBytes = 65535
@@ -28,16 +27,21 @@ class ContractImageService(
             }
 
             if (finderContractImageProperties.enabled) {
-                val s3Bucket = finderContractImageProperties.s3Bucket!!
+                val gcsBucket = finderContractImageProperties.gcsBucket!!
                 val urlPrefix = finderContractImageProperties.urlPrefix!!
 
                 val fileExt = FilenameUtils.getExtension(it.originalFilename)
                 val filename = "${contractAddress}_${System.currentTimeMillis()}.$fileExt"
                 val s3RelativeFilePath = "finder/static/img/contract/${chainProperties.type}/$filename"
-                val imageUploadRequest = PutObjectRequest.builder()
-                    .bucket(s3Bucket).key(s3RelativeFilePath).contentType(tokenImage.contentType).build()
-                s3Client.putObject(imageUploadRequest, RequestBody.fromBytes(it.bytes))
-
+                val blob = gcsClient.get(gcsBucket, s3RelativeFilePath)
+                if (blob != null) {
+                    throw InvalidContractSubmissionException("token image already exists.")
+                } else {
+                    val blobInfo = BlobInfo.newBuilder(gcsBucket, s3RelativeFilePath)
+                        .setContentType(tokenImage.contentType)
+                        .build()
+                    gcsClient.create(blobInfo, it.bytes)
+                }
                 "$urlPrefix/$s3RelativeFilePath"
             } else {
                 val encodedImage = String(Base64.getEncoder().encode(it.bytes))
@@ -56,6 +60,6 @@ class ContractImageService(
 @ConfigurationProperties(prefix = "finder.images.contract")
 data class FinderContractImageProperties(
     val enabled: Boolean,
-    val s3Bucket: String?,
+    val gcsBucket: String?,
     val urlPrefix: String?,
 )
