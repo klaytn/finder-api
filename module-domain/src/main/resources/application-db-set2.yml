@@ -27,7 +27,7 @@ spring:
   db:
     set02:
       datasource:
-        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_BAOBAB_02_ENDPOINT}:3306/finder?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_BAOBAB_02_ENDPOINT}:3306/finder?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
         pool-name: finder-baobab-02
         maximum-pool-size: 20
 ---
@@ -41,42 +41,42 @@ spring:
       sharding: true
       shardDataSources:
         SHARD_0:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0201_ENDPOINT}:3306/finder01?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0201_ENDPOINT}:3306/finder01?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0201
           maximum-pool-size: 20
         SHARD_1:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0202_ENDPOINT}:3306/finder02?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0202_ENDPOINT}:3306/finder02?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0202
           maximum-pool-size: 20
         SHARD_2:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0203_ENDPOINT}:3306/finder03?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0203_ENDPOINT}:3306/finder03?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0203
           maximum-pool-size: 20
         SHARD_3:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0204_ENDPOINT}:3306/finder04?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0204_ENDPOINT}:3306/finder04?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0204
           maximum-pool-size: 20
         SHARD_4:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0205_ENDPOINT}:3306/finder05?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0205_ENDPOINT}:3306/finder05?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0205
           maximum-pool-size: 20
         SHARD_5:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0201_ENDPOINT}:3306/finder06?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0201_ENDPOINT}:3306/finder06?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0206
           maximum-pool-size: 20
         SHARD_6:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0202_ENDPOINT}:3306/finder07?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0202_ENDPOINT}:3306/finder07?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0207
           maximum-pool-size: 20
         SHARD_7:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0203_ENDPOINT}:3306/finder08?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0203_ENDPOINT}:3306/finder08?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0208
           maximum-pool-size: 20
         SHARD_8:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0204_ENDPOINT}:3306/finder09?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0204_ENDPOINT}:3306/finder09?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0209
           maximum-pool-size: 20
         SHARD_9:
-          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0205_ENDPOINT}:3306/finder10?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+          jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_0205_ENDPOINT}:3306/finder10?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
           pool-name: finder-cypress-0210
           maximum-pool-size: 20

@@ -3,7 +3,7 @@ spring:
     common-property:
       datasource:
         url-prefix: jdbc:mysql
-        url-suffix: '?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull'
+        url-suffix: '?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL'
         driver-class-name: com.mysql.cj.jdbc.Driver
         username: ${MYSQL_USER}
         password: ${MYSQL_PASSWORD}

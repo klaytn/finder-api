@@ -55,6 +55,30 @@ class AccountController(
         }
 
     @Operation(
+            description = "Retrieve the list of transactions where the account has paid fees.",
+            parameters = [
+                Parameter(name = "accountAddress", description = "account address", `in` = ParameterIn.PATH)
+            ]
+    )
+    @GetMapping("/api/v1/accounts/{accountAddress}/fee-paid-transactions")
+    fun getFeePaidTransactions(
+            @PathVariable accountAddress: String,
+            @Valid blockRangeRequest: BlockRangeRequest? = null,
+            @RequestParam(name = "type", required = false) type: TransactionType?,
+            @Valid simplePageRequest: SimplePageRequest,
+    ): ScopePage<TransactionListView> {
+        val blockRangeIntervalType = BlockRangeIntervalType.TRANSACTION
+        val blockRange = blockRangeService.getBlockRange(blockRangeRequest, blockRangeIntervalType)
+
+        return ScopePage.of(
+                transactionService.getTransactionsByFeePayer(
+                        accountService.checkAndGetAddress(accountAddress), blockRange, type, simplePageRequest),
+                transactionToListViewMapper,
+                blockRangeService.getBlockRangeCondition(blockRange, blockRangeIntervalType)
+        )
+    }
+
+    @Operation(
         description = "Retrieve a list of transactions for an account.",
         parameters = [
             Parameter(name = "accountAddress", description = "account address", `in` = ParameterIn.PATH)

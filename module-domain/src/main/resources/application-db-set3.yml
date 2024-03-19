@@ -27,7 +27,7 @@ spring:
   db:
     set03:
       datasource:
-        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_BAOBAB_03_ENDPOINT}:3306/finder?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_BAOBAB_03_ENDPOINT}:3306/finder?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
         pool-name: finder-baobab-03
         maximum-pool-size: 20
 ---
@@ -39,6 +39,6 @@ spring:
   db:
     set03:
       datasource:
-        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_03_ENDPOINT}:3306/finder?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull
+        jdbc-url: ${spring.db.common-property.datasource.url-prefix}://${MYSQL_CYPRESS_03_ENDPOINT}:3306/finder?serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL
         pool-name: finder-cypress-03
         maximum-pool-size: 20
