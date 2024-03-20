@@ -13,7 +13,7 @@ data class SimplePageRequest(
         @field:Min(1)
         val page: Int = 1,
         @field:Parameter(description = "Number of records per page", example = "20")
-        @field:Range(min = 1, max = 20)
+        @field:Range(min = 1, max = 2000)
         val size: Int = 20,
 ) {
     fun pageRequest(sort: Sort) = PageRequest.of(page - 1, size, sort)
