@@ -29,6 +29,37 @@ class SolidityCompiler(
         return parse(output)
     }
 
+
+    fun compileMultiple(files: List<File>, option: Option): List<CompileResult> {
+        val compiler = solidityBuildFileManager.getCompiler(option.version)
+
+        val command = arrayOf(
+            compiler.value.absolutePath,
+            option.toCommand(compiler.key.version),
+            files.joinToString(" ") { it.absolutePath }
+        ).joinToString(" ")
+
+        logger.info("[start] command: $command")
+        val output = command.execute() ?: return emptyList()
+        logger.info("[  end] output: ${output.toPrettyString()}")
+
+        return parse(output)
+    }
+
+    fun compileWithStdInput(input: String): List<CompileResult> {
+        val compiler = solidityBuildFileManager
+    }
+
+    private fun parseStdInput(json: JsonNode): Option {
+        val sources = json.at("/sources")
+        sources.fields().forEach { entry ->
+            val name = entry.key.substringAfter(":")
+            val node = entry.value
+            // TODO
+
+        }
+    }
+
     private fun parse(json: JsonNode): List<CompileResult> {
         val result = mutableListOf<CompileResult>()
         val tree = json.at("/contracts")
