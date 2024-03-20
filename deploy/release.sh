@@ -76,6 +76,8 @@ function main() {
     then
         source ./conf.sh
         sudo -E java $JAVA_OPTS -Dsun.net.inetaddr.ttl=0 -DAPP_LOGS=./logs/prod-$target -Dspring.profiles.active="prod,prodCypress,devAuthToken" -jar $MODULE_NAME/build/libs/$WAR_NAME.war
+        # sudo gradle :module-open-api:build --continuous
+        # sudo -E gradle :module-open-api:bootRun -Pargs=--spring.profiles.active="prod,prodCypress,devAuthToken"
         exit 0
     else
         gcloud auth configure-docker $DOCKER_REGISTRY
