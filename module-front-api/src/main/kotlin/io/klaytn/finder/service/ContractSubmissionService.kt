@@ -47,15 +47,9 @@ class ContractSubmissionService(
             }
             val contractCreatorAccount = accountService.getAccount(contractAccount.contractCreatorAddress!!)
 
-            // 1) check contract owner
-            if (chainProperties.type.equals("baobab", ignoreCase = true) &&
-                contractSubmissionRequest.contractAddress.equals("0x8c5577cbaf9c3451f912edd5a697694634c2cd78", ignoreCase = true)) {
-                // for test
-            } else {
-                verifyContractCreatorSignature(
-                    contractAddress, contractAccount, contractCreatorAccount, contractCreatorSignature,
-                    WalletType.getOrDefaultIfNull(walletType))
-            }
+            verifyContractCreatorSignature(
+                contractAddress, contractAccount, contractCreatorAccount, contractCreatorSignature,
+                WalletType.getOrDefaultIfNull(walletType))
 
             // 2) compile source code
             val libraryMap = this.libraries?.let { libraries ->
