@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -34,6 +35,18 @@ class ContractController(
         @PathVariable contractAddress: String
     ) = contractService.getContract(contractAddress)?.let { contractToItemViewMapper.transform(it) }
         ?: throw NotFoundContractException()
+
+
+    @Operation(
+        description = "Retrieve contract information.",
+        parameters = [
+            Parameter(name = "contractAddresses", description = "contract address list", `in` = ParameterIn.QUERY),
+        ]
+    )
+    @GetMapping("/api/v1/contracts")
+    fun getContracts(
+        @RequestParam contractAddresses: List<String>
+        ) = contractService.getContracts(contractAddresses).map { contractToItemViewMapper.transform(it) }
 
     @Operation(
         description = "Retrieve the ABI (Application Binary Interface) of a contract.",
