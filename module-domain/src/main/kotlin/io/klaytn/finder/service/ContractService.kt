@@ -33,7 +33,7 @@ class ContractService(
 ) {
     fun getContract(address: String) = contractCachedService.getContract(address)
 
-    fun getContracts(addresses: List<String>) = contractCachedService.getContracts(addresses)
+    fun getContracts(addresses: List<String>) = contractCachedService.getContracts(addresses.distinct())
 
     fun getContractMap(addresses: Set<String>) =
         if (addresses.isNotEmpty()) {
