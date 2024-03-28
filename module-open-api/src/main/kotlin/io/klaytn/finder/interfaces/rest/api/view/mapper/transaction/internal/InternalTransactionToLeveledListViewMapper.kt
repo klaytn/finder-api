@@ -33,7 +33,7 @@ class InternalTransactionToLeveledListViewMapper(
                 to = it.to?.address,
                 amount = it.value,
                 gasLimit = it.gas,
-                inputData = inputDataViewMapper.transform(it.input),
+                inputData = inputDataViewMapper.transformSingle(it.input),
                 outputData = it.output,
                 error = it.error,
                 reverted = it.reverted?.let { reverted -> jacksonObjectMapper().readValue(reverted) }
