@@ -10,6 +10,7 @@ class ContractToItemViewMapper(
 ) : Mapper<Contract, ContractItemView> {
     override fun transform(source: Contract): ContractItemView {
         return ContractItemView(
+            address = source.contractAddress,
             type = source.contractType,
             name = source.name,
             symbol = source.symbol,
