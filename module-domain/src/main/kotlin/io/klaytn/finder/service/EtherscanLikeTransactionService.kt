@@ -291,9 +291,9 @@ class EtherscanLikeTransactionService(
                 val confirmations = tx[16]
                 val transactionHash = tx[0]
                 val cumulativeGasUsed = tx[19]
-                val tokenTransferList =
+                val tokenTransfers =
                     transactionHashMap[transactionHash]!!
-                tokenTransferList.map { transfer ->
+                tokenTransfers.map { transfer ->
                     transfer.nonce = nonce
                     transfer.blockHash = blockHash
                     transfer.transactionIndex = transactionIndex
@@ -502,8 +502,8 @@ class EtherscanLikeTransactionService(
                 val confirmations = tx[16]
                 val transactionHash = tx[0]
                 val cumulativeGasUsed = tx[19]
-                val nftTransferList = transactionHashMap[transactionHash]!!
-                nftTransferList.map { transfer ->
+                val nftTransfers = transactionHashMap[transactionHash]!!
+                nftTransfers.map { transfer ->
                     transfer.nonce = nonce
                     transfer.blockHash = blockHash
                     transfer.transactionIndex = transactionIndex
@@ -610,9 +610,9 @@ class EtherscanLikeTransactionService(
 
         val transactions = emptyList<Transaction>().toMutableList()
         val chunkedInternalTxList = internalTxList.chunked(1000)
-        chunkedInternalTxList.map { chunkedInternalTxList ->
-            val blockNumbers = chunkedInternalTxList.map { it.blockNumber }
-            val blocksTxIndices = chunkedInternalTxList.map { "${it.blockNumber},${it.transactionIndex}" }
+        chunkedInternalTxList.map { chunkedInternalTxs ->
+            val blockNumbers = chunkedInternalTxs.map { it.blockNumber }
+            val blocksTxIndices = chunkedInternalTxs.map { "${it.blockNumber},${it.transactionIndex}" }
             transactions += transactionRepository.findAllByTransactionByBlockNumbersAndTransactionIndices(
                 blockNumbers,
                 blocksTxIndices
