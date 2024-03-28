@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository
 interface FunctionSignatureRepository : BaseRepository<FunctionSignature> {
     fun findAllByBytesSignature(bytesSignature: String): List<FunctionSignature>
     fun findByFourByteId(fourByteId: Long): FunctionSignature?
+    fun findAllByBytesSignatureIn(bytesSignatures: List<String>): List<FunctionSignature>
 
     @Modifying
     @Query("UPDATE FunctionSignature f SET f.primary = :primary WHERE f.id = :id")
