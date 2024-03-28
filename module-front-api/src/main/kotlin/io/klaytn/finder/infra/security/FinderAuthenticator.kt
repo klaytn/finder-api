@@ -33,7 +33,6 @@ class FinderAuthenticator(
     private val requestTimestampThreshold = TimeUnit.SECONDS.toMillis(5)
 
     fun authenticate(request: HttpServletRequest, jwt: String): FinderUser {
-        val currentTimestamp = System.currentTimeMillis()
         val signedJWT = SignedJWT.parse(jwt)
         val claims = signedJWT.jwtClaimsSet.claims
 

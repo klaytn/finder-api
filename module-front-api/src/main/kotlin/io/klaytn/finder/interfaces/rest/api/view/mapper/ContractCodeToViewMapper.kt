@@ -50,7 +50,6 @@ class ContractCodeToItemViewMapper(
                 null
             }
 
-        val optimizationRunsCount = source.optimizationRunsCount
         return ContractCodeView(
             contractName = source.contractName,
             contractSourceCode = source.contractSourceCode,
