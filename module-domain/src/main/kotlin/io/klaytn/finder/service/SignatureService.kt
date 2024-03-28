@@ -17,7 +17,14 @@ class SignatureService(
             .sortedByDescending {
                 it.textSignature.count { ch -> ch == ',' }
             }
-
+    fun getFunctionSignatures(bytes: List<String>): Map<String, List<Signature>> =
+        functionSignatureService.getFunctionSignaturesFilterWithPrimary(bytes)
+            .mapValues { (_, value) ->
+                value.map { Signature(it.id.toInt(), it.bytesSignature, it.textSignature) }
+                    .sortedByDescending {
+                        it.textSignature.count { ch -> ch == ',' }
+                    }
+            }
     fun getEventSignatures(bytes: String) =
         evenSignatureService.getEventSignatureFilterWithPrimary(bytes)
             .map { Signature(it.id.toInt(), it.hexSignature, it.textSignature) }
