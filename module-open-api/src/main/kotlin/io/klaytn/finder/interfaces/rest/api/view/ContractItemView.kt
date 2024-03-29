@@ -6,6 +6,9 @@ import java.math.BigDecimal
 
 @Schema
 data class ContractItemView(
+    @Schema(title="Contract Address")
+    val address: String,
+
     @Schema(title="Type")
     val type: ContractType,
 
