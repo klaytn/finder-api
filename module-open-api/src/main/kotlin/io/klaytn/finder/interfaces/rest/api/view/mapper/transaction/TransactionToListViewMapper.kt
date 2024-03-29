@@ -22,7 +22,7 @@ class TransactionToListViewMapper(
             val transactionFee = transactionService.getTransactionFees(transaction)
             val burntFees = transactionService.getTransactionBurntFees(transaction)
 
-            val inputDataView = transaction.input?.let { transactionToInputDataViewMapper.transform(it) }
+            val inputDataView = transaction.input?.let { transactionToInputDataViewMapper.transformSingle(it) }
             val signature = inputDataView?.decodedValue?.signature
             val methodId = transaction.getMethodId()
 

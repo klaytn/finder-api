@@ -21,6 +21,11 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import org.springframework.data.jpa.domain.Specification
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.Root
 
 @Service
 class TransactionService(
@@ -134,6 +139,9 @@ class TransactionService(
         transactionCachedService.getTransactionHashesByBlockNumberAndTransactionIndices(blockNumber, transactionIndices)
             .map { it.transactionHash }.run { transactionCachedService.getTransactions(this) }
 
+    fun getTransactionByBlockNumbersAndTransactionIndices(blockIndexPairs: List<Pair<Long, Int>>) =
+    transactionCachedService.getTransactionByBlockNumbersAndTransactionIndices(blockIndexPairs)
+
     fun getTransactionFees(transaction: Transaction): BigDecimal {
         val gasPrice = gasPriceService.getGasPrice(transaction.blockNumber, transaction.effectiveGasPrice)
         return gasPrice * transaction.gasUsed.toBigDecimal()
@@ -227,6 +235,17 @@ class TransactionCachedService(
 
     fun getTransactionHashesByBlockNumberAndTransactionIndices(blockNumber: Long, transactionIndices: List<Int>) =
         transactionRepository.findByBlockNumberAndTransactionIndexIn(blockNumber, transactionIndices)
+
+    fun getTransactionByBlockNumbersAndTransactionIndices(blockIndexPairs: List<Pair<Long, Int>>) =
+        transactionRepository.findAll(Specification<Transaction> { root: Root<Transaction>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder ->
+            val predicates = blockIndexPairs.map { (blockNumber, transactionIndex) ->
+                criteriaBuilder.and(
+                    criteriaBuilder.equal(root.get<Long>("blockNumber"), blockNumber),
+                    criteriaBuilder.equal(root.get<Int>("transactionIndex"), transactionIndex)
+                )
+            }
+            criteriaBuilder.or(*predicates.toTypedArray())
+        })
 
     fun getTransactionHashesByAccountAddressAndTransactionType(
         accountAddress: String,

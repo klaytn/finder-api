@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.data.jpa.domain.Specification
 
 const val etherscanLikeAccountTransactionSelectQuery: String = """
     SELECT DISTINCT
@@ -41,7 +42,7 @@ const val etherscanLikeCumulativeGasUsedQuery: String = """
 	SELECT
 		SUM(t2.gas_used) AS gas FROM ${DbTableConstants.transactions} t2
 WHERE
-	t2.block_number = T1.blockNumber 
+	t2.block_number = T1.blockNumber
     AND t2.transaction_index <= T1.transactionIndex
     ) AS CHAR) AS cumulativeGasUsed
 """
@@ -67,7 +68,7 @@ const val etherscanLikeAccountTransactionQueryOrderDescQuery: String = """
     $etherscanLikeAccountTransactionOrderByDescQuery
     $etherscanLikeAccountTransactionLimitQuery
     )
-    ) T1 
+    ) T1
     ORDER BY T1.blockNumber DESC, T1.transactionIndex DESC
     LIMIT :offset, :limit
     """
@@ -86,9 +87,9 @@ const val etherscanLikeAccountTransactionQueryOrderAscQuery: String = """
     $etherscanLikeAccountTransactionOrderByAscQuery
     $etherscanLikeAccountTransactionLimitQuery
     )
-    ) T1 
+    ) T1
     ORDER BY T1.blockNumber ASC, T1.transactionIndex ASC
-    LIMIT :offset, :limit 
+    LIMIT :offset, :limit
     """
 const val etherscanLikeAccountTransactionBlockNumberBetweenOrderByDescQuery = """
     SELECT T1.*, $etherscanLikeCumulativeGasUsedQuery FROM (
@@ -107,7 +108,7 @@ const val etherscanLikeAccountTransactionBlockNumberBetweenOrderByDescQuery = ""
     $etherscanLikeAccountTransactionOrderByDescQuery
     $etherscanLikeAccountTransactionLimitQuery
     )
-    ) T1 
+    ) T1
     ORDER BY T1.blockNumber DESC, T1.transactionIndex DESC
     LIMIT :offset, :limit
     """
@@ -128,14 +129,14 @@ const val etherscanLikeAccountTransactionBlockNumberBetweenOrderByAscQuery = """
     $etherscanLikeAccountTransactionOrderByAscQuery
     $etherscanLikeAccountTransactionLimitQuery
     )
-    ) T1 
+    ) T1
     ORDER BY T1.blockNumber ASC, T1.transactionIndex ASC
     LIMIT :offset, :limit
     """
 
 const val etherscanLikeAccountTransactionWhereInTxHashQuery: String = "WHERE t.transaction_hash IN :transactionHashes"
-const val etherscanLikeAccountTokenTransactionQuery: String = """ 
-    SELECT T1.*, $etherscanLikeCumulativeGasUsedQuery FROM 
+const val etherscanLikeAccountTokenTransactionQuery: String = """
+    SELECT T1.*, $etherscanLikeCumulativeGasUsedQuery FROM
     (
     $etherscanLikeAccountTransactionSelectQuery
     $etherscanLikeAccountTransactionWhereInTxHashQuery
@@ -143,6 +144,8 @@ const val etherscanLikeAccountTokenTransactionQuery: String = """
 """
 @Repository
 interface TransactionRepository : BaseRepository<Transaction> {
+    fun findAll(spec: Specification<Transaction>): List<Transaction>
+
     @Query(
         nativeQuery = true,
         value = "SELECT max(id) FROM ${DbTableConstants.transactions}"
@@ -183,21 +186,21 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             (
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_from_type_blocknumber_transactionindex)
-                    WHERE 
-                        `from` = :accountAddress AND `type` = :#{#type.name()} 
+                    WHERE
+                        `from` = :accountAddress AND `type` = :#{#type.name()}
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
-                union 
+                union
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_type_blocknumber_transactionindex)
-                    WHERE 
-                        `to` = :accountAddress AND `type` = :#{#type.name()} 
+                    WHERE
+                        `to` = :accountAddress AND `type` = :#{#type.name()}
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
             )
             ORDER BY block_number DESC, transaction_index DESC
@@ -215,25 +218,25 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             (
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_from_type_blocknumber_transactionindex)
-                    WHERE 
-                        `from` = :accountAddress  
+                    WHERE
+                        `from` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
                         AND `type` = :#{#type.name()}
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
-                union 
+                union
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_type_blocknumber_transactionindex)
-                    WHERE 
+                    WHERE
                         `to` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
-                        AND `type` = :#{#type.name()} 
+                        AND `type` = :#{#type.name()}
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
             )
             ORDER BY block_number DESC, transaction_index DESC
@@ -253,21 +256,21 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             (
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
-                        ${DbTableConstants.transactions} force index(ix_from_blocknumber_transactionindex) 
-                    WHERE 
-                        `from` = :accountAddress 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
+                        ${DbTableConstants.transactions} force index(ix_from_blocknumber_transactionindex)
+                    WHERE
+                        `from` = :accountAddress
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
-                union 
+                union
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_blocknumber_transactionindex)
-                    WHERE 
-                        `to` = :accountAddress 
+                    WHERE
+                        `to` = :accountAddress
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
             )
             ORDER BY block_number DESC, transaction_index DESC
@@ -284,22 +287,22 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             (
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
-                        ${DbTableConstants.transactions} force index(ix_from_blocknumber_transactionindex) 
-                    WHERE 
-                        `from` = :accountAddress 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
+                        ${DbTableConstants.transactions} force index(ix_from_blocknumber_transactionindex)
+                    WHERE
+                        `from` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
-                union 
+                union
                 (
-                    SELECT 
-                        transaction_hash as transactionHash, block_number, transaction_index 
-                    FROM 
+                    SELECT
+                        transaction_hash as transactionHash, block_number, transaction_index
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_blocknumber_transactionindex)
-                    WHERE 
-                        `to` = :accountAddress 
+                    WHERE
+                        `to` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
                     ORDER BY block_number DESC, transaction_index DESC limit :maxTotalCount)
             )
@@ -317,14 +320,14 @@ interface TransactionRepository : BaseRepository<Transaction> {
     @Query(
         nativeQuery = true,
         value = """
-            SELECT 
-                transaction_hash as transactionHash, block_number, transaction_index 
-            FROM 
-                ${DbTableConstants.transactions} 
-            WHERE 
-                `fee_payer` = :feePayer 
-                AND `type` = :#{#type.name()} 
-            ORDER BY 
+            SELECT
+                transaction_hash as transactionHash, block_number, transaction_index
+            FROM
+                ${DbTableConstants.transactions}
+            WHERE
+                `fee_payer` = :feePayer
+                AND `type` = :#{#type.name()}
+            ORDER BY
                 block_number DESC, transaction_index DESC
             """
     )
@@ -337,15 +340,15 @@ interface TransactionRepository : BaseRepository<Transaction> {
     @Query(
         nativeQuery = true,
         value = """
-            SELECT 
-                transaction_hash as transactionHash, block_number, transaction_index 
-            FROM 
-                ${DbTableConstants.transactions} 
-            WHERE 
-                `fee_payer` = :feePayer 
-                AND `type` = :#{#type.name()} 
+            SELECT
+                transaction_hash as transactionHash, block_number, transaction_index
+            FROM
+                ${DbTableConstants.transactions}
+            WHERE
+                `fee_payer` = :feePayer
+                AND `type` = :#{#type.name()}
                 AND block_number between :blockNumberStart and :blockNumberEnd
-            ORDER BY 
+            ORDER BY
                 block_number DESC, transaction_index DESC
             """
     )
@@ -360,13 +363,13 @@ interface TransactionRepository : BaseRepository<Transaction> {
     @Query(
         nativeQuery = true,
         value = """
-            SELECT 
-                transaction_hash as transactionHash, block_number, transaction_index 
-            FROM 
-                ${DbTableConstants.transactions} 
-            WHERE 
-                `fee_payer` = :feePayer 
-            ORDER BY 
+            SELECT
+                transaction_hash as transactionHash, block_number, transaction_index
+            FROM
+                ${DbTableConstants.transactions}
+            WHERE
+                `fee_payer` = :feePayer
+            ORDER BY
                 block_number DESC, transaction_index DESC
             """
     )
@@ -378,14 +381,14 @@ interface TransactionRepository : BaseRepository<Transaction> {
     @Query(
         nativeQuery = true,
         value = """
-            SELECT 
-                transaction_hash as transactionHash, block_number, transaction_index 
-            FROM 
-                ${DbTableConstants.transactions} 
-            WHERE 
-                `fee_payer` = :feePayer 
+            SELECT
+                transaction_hash as transactionHash, block_number, transaction_index
+            FROM
+                ${DbTableConstants.transactions}
+            WHERE
+                `fee_payer` = :feePayer
                 AND block_number between :blockNumberStart and :blockNumberEnd
-            ORDER BY 
+            ORDER BY
                 block_number DESC, transaction_index DESC
             """
     )
@@ -494,13 +497,13 @@ interface TransactionRepository : BaseRepository<Transaction> {
         nativeQuery = true,
         value = """
             SELECT count(*) FROM (
-                SELECT 
-                    1 
-                FROM 
-                    ${DbTableConstants.transactions} 
-                WHERE 
-                    block_number between :blockNumberStart AND :blockNumberEnd 
-                    AND `type`= :#{#type.name()} 
+                SELECT
+                    1
+                FROM
+                    ${DbTableConstants.transactions}
+                WHERE
+                    block_number between :blockNumberStart AND :blockNumberEnd
+                    AND `type`= :#{#type.name()}
             ) t
         """
     )
@@ -514,12 +517,12 @@ interface TransactionRepository : BaseRepository<Transaction> {
         nativeQuery = true,
         value = """
             SELECT count(*) FROM (
-                SELECT 
-                    1 
-                FROM 
-                    ${DbTableConstants.transactions} 
-                WHERE 
-                    block_number between :blockNumberStart AND :blockNumberEnd  
+                SELECT
+                    1
+                FROM
+                    ${DbTableConstants.transactions}
+                WHERE
+                    block_number between :blockNumberStart AND :blockNumberEnd
             ) t
         """
     )
@@ -533,25 +536,25 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             SELECT count(DISTINCT id) as cnt FROM (
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_from_blocknumber_transactionindex)
-                    WHERE 
+                    WHERE
                         `from` = :accountAddress
                     limit :maxTotalCount
-                ) 
+                )
                 union all
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_blocknumber_transactionindex)
-                    WHERE 
-                        `to` = :accountAddress  
+                    WHERE
+                        `to` = :accountAddress
                     limit :maxTotalCount
                 )
-            ) as s         
+            ) as s
             """,
     )
     fun countAllByAccountAddress(
@@ -564,27 +567,27 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             SELECT count(DISTINCT id) as cnt FROM (
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_from_blocknumber_transactionindex)
-                    WHERE 
+                    WHERE
                         `from` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
                     limit :maxTotalCount
-                ) 
+                )
                 union all
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_blocknumber_transactionindex)
-                    WHERE 
-                        `to` = :accountAddress  
+                    WHERE
+                        `to` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
                     limit :maxTotalCount
                 )
-            ) as s         
+            ) as s
             """,
     )
     fun countAllByAccountAddressAndBlockNumberBetween(
@@ -599,25 +602,25 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             SELECT count(DISTINCT id) as cnt FROM (
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_from_type_blocknumber_transactionindex)
-                    WHERE 
+                    WHERE
                         `from` = :accountAddress  AND `type`= :#{#type.name()}
                     limit :maxTotalCount
                 )
                 union all
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_type_blocknumber_transactionindex)
-                    WHERE 
+                    WHERE
                         `to` = :accountAddress  AND `type`= :#{#type.name()}
                     limit :maxTotalCount
                 )
-            ) as s      
+            ) as s
             """,
     )
     fun countAllByAccountAddressAndType(
@@ -631,29 +634,29 @@ interface TransactionRepository : BaseRepository<Transaction> {
         value = """
             SELECT count(DISTINCT id) as cnt FROM (
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_from_type_blocknumber_transactionindex)
-                    WHERE 
-                        `from` = :accountAddress  
+                    WHERE
+                        `from` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
                         AND `type`= :#{#type.name()}
                     limit :maxTotalCount
                 )
                 union all
                 (
-                    SELECT 
+                    SELECT
                         id
-                    FROM 
+                    FROM
                         ${DbTableConstants.transactions} force index(ix_to_type_blocknumber_transactionindex)
-                    WHERE 
-                        `to` = :accountAddress  
+                    WHERE
+                        `to` = :accountAddress
                         AND block_number between :blockNumberStart and :blockNumberEnd
                         AND `type`= :#{#type.name()}
                     limit :maxTotalCount
                 )
-            ) as s      
+            ) as s
             """,
     )
     fun countAllByAccountAddressAndBlockNumberBetweenAndType(
@@ -668,14 +671,14 @@ interface TransactionRepository : BaseRepository<Transaction> {
         nativeQuery = true,
         value = """
             SELECT count(*) as CNT FROM (
-                SELECT 
-                    1 
-                FROM 
-                    ${DbTableConstants.transactions} 
-                WHERE 
-                    `fee_payer` = :feePayer  
-                    AND `type`= :#{#type.name()} 
-                limit 
+                SELECT
+                    1
+                FROM
+                    ${DbTableConstants.transactions}
+                WHERE
+                    `fee_payer` = :feePayer
+                    AND `type`= :#{#type.name()}
+                limit
                     :maxTotalCount
             ) t
             """,
@@ -690,14 +693,14 @@ interface TransactionRepository : BaseRepository<Transaction> {
         nativeQuery = true,
         value = """
             SELECT count(*) as CNT FROM (
-                SELECT 
-                    1 
-                FROM 
-                    ${DbTableConstants.transactions} 
-                WHERE 
-                    `fee_payer` = :feePayer 
+                SELECT
+                    1
+                FROM
+                    ${DbTableConstants.transactions}
+                WHERE
+                    `fee_payer` = :feePayer
                     AND block_number between :blockNumberStart and :blockNumberEnd
-                    AND `type`= :#{#type.name()} 
+                    AND `type`= :#{#type.name()}
                 limit :maxTotalCount
             ) t
             """,
@@ -714,13 +717,13 @@ interface TransactionRepository : BaseRepository<Transaction> {
         nativeQuery = true,
         value = """
             SELECT count(*) as CNT FROM (
-                SELECT 
-                    1 
-                FROM 
-                    ${DbTableConstants.transactions} 
-                WHERE 
-                    `fee_payer` = :feePayer 
-                limit 
+                SELECT
+                    1
+                FROM
+                    ${DbTableConstants.transactions}
+                WHERE
+                    `fee_payer` = :feePayer
+                limit
                     :maxTotalCount
             ) t
             """,
@@ -734,14 +737,14 @@ interface TransactionRepository : BaseRepository<Transaction> {
         nativeQuery = true,
         value = """
             SELECT count(*) as CNT FROM (
-                SELECT 
-                    1 
-                FROM 
-                    ${DbTableConstants.transactions} 
-                WHERE 
-                    `fee_payer` = :feePayer 
+                SELECT
+                    1
+                FROM
+                    ${DbTableConstants.transactions}
+                WHERE
+                    `fee_payer` = :feePayer
                     AND block_number between :blockNumberStart and :blockNumberEnd
-                limit 
+                limit
                     :maxTotalCount
             ) t
             """,
@@ -766,7 +769,7 @@ interface TransactionRepository : BaseRepository<Transaction> {
             )
             THEN 'true'
             ELSE 'false'
-            END            
+            END
         """
     )
     fun existsByAccountAddress(@Param("accountAddress") accountAddress: String): Boolean

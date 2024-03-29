@@ -17,21 +17,16 @@ class InternalTransactionToListViewMapper(
 ) : ListMapper<InternalTransaction, InternalTransactionListView> {
     override fun transform(source: List<InternalTransaction>): List<InternalTransactionListView> {
         val blockNumberAndTransactionIndices = source.map { Pair(it.blockNumber, it.transactionIndex) }
-            .groupBy { it.first }.entries.associate {
-                it.key to it.value.map { it.second }
-            }
-
-        val transactions = blockNumberAndTransactionIndices.map {
-            transactionService.getTransactionByBlockNumberAndTransactionIndices(it.key, it.value)
-        }.flatten().groupBy { it.blockNumber }.entries.associate { entry ->
+        val transactions = transactionService.getTransactionByBlockNumbersAndTransactionIndices(blockNumberAndTransactionIndices)
+        val transactionsMap = transactions.groupBy { it.blockNumber }.entries.associate { entry ->
             entry.key to entry.value.associateBy { it.transactionIndex }
         }
+        val signaturesMap = inputDataViewMapper.transform(transactions).associateBy { it.originalValue }
 
         return source.map {
-            val transaction = transactions[it.blockNumber]?.get(it.transactionIndex)
+            val transaction = transactionsMap[it.blockNumber]?.get(it.transactionIndex)
 
-            val inputDataView = inputDataViewMapper.transform(it.input)
-            val signature = inputDataView.decodedValue?.signature
+            val signature = signaturesMap[it.input]
             val methodId = it.getMethodId()
 
             InternalTransactionListView(
@@ -45,7 +40,7 @@ class InternalTransactionToListViewMapper(
                 amount = it.value,
                 error = it.error,
                 methodId = methodId,
-                signature = signature,
+                signature = signature?.decodedValue?.signature,
                 transactionStatus = transaction?.let { transactionToStatusViewMapper.transform(transaction) }
             )
         }

@@ -33,6 +33,25 @@ class FunctionSignatureService(
         return functionSignatures
     }
 
+    fun getFunctionSignaturesFilterWithPrimary(bytesSignature: List<String>): Map<String, List<FunctionSignature>> {
+        val functionSignatures = mutableMapOf<String, List<FunctionSignature>>()
+        getFunctionSignatures(bytesSignature).groupBy { it.bytesSignature to it}.forEach{
+            val sig = it.key.first
+            it.value.groupBy { it.textSignature.count { ch -> ch == ',' } }.forEach {
+                val primaryFunctionSignature = it.value.find { functionSignature ->  functionSignature.primary == true }
+                if(primaryFunctionSignature != null) {
+                    functionSignatures[sig] = functionSignatures[sig]?.plus(primaryFunctionSignature) ?: listOf(primaryFunctionSignature)
+                } else {
+                    functionSignatures[sig] = functionSignatures[sig]?.plus(it.value) ?: it.value
+                }
+            }
+        }
+        return functionSignatures
+    }
+
+    fun getFunctionSignatures(bytes: List<String>) =
+        functionSignatureRepository.findAllByBytesSignatureIn(bytes)
+
     fun addFunctionSignature(functionSignature: FunctionSignature) =
         try {
             functionSignatureCachedService.addFunctionSignature(functionSignature)

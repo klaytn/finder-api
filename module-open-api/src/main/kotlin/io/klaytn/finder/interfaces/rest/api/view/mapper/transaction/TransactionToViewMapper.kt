@@ -41,7 +41,7 @@ class TransactionToViewMapper(
             null
         }
 
-        val inputDataView = source.input?.let { transactionToInputDataViewMapper.transform(it) }
+        val inputDataView = source.input?.let { transactionToInputDataViewMapper.transformSingle(it) }
         val signature = inputDataView?.decodedValue?.signature
         val methodId = source.getMethodId()
 
