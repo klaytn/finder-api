@@ -380,21 +380,21 @@ class TransactionCachedService(
                         accountAddress,
                         blockNumberRange.first, blockNumberRange.last,
                         transactionType,
-                        finderServerPaging.limit.transaction)
+                        finderServerPaging.limit.accountTransaction)
                 } else {
                     transactionRepository.countAllByAccountAddressAndType(accountAddress,
                         transactionType,
-                        finderServerPaging.limit.transaction)
+                        finderServerPaging.limit.accountTransaction)
                 }
             } else {
                 if(blockNumberRange != null) {
                     transactionRepository.countAllByAccountAddressAndBlockNumberBetween(
                         accountAddress,
                         blockNumberRange.first, blockNumberRange.last,
-                        finderServerPaging.limit.transaction
+                        finderServerPaging.limit.accountTransaction
                     )
                 } else {
-                    transactionRepository.countAllByAccountAddress(accountAddress, finderServerPaging.limit.transaction)
+                    transactionRepository.countAllByAccountAddress(accountAddress, finderServerPaging.limit.accountTransaction)
                 }
 
             })
