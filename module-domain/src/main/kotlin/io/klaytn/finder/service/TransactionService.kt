@@ -373,7 +373,7 @@ class TransactionCachedService(
         transactionType: TransactionType?
     ) =
         minOf(
-            finderServerPaging.limit.transaction,
+            finderServerPaging.limit.accountTransaction,
             if (transactionType != null) {
                 if(blockNumberRange != null) {
                     transactionRepository.countAllByAccountAddressAndBlockNumberBetweenAndType(
