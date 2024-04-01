@@ -18,6 +18,7 @@ class FinderServerPagingLimitConfig(
     @DynamicSetting val block: Long = 40_000L
     @DynamicSetting val transaction: Long = 40_000L
     @DynamicSetting val internalTransaction: Long = 40_000L
+    @DynamicSetting val accountTransaction: Long = 100_000_000L
     @DynamicSetting val eventLog: Long = 40_000L
     @DynamicSetting val tokenHolder: Long = 500_000L
     @DynamicSetting val nftInventory: Long = 500_000L
