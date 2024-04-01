@@ -18,11 +18,13 @@ class TransactionToListViewMapper(
     private val transactionToStatusViewMapper: TransactionToStatusViewMapper,
 ) : ListMapper<Transaction, TransactionListView> {
     override fun transform(source: List<Transaction>): List<TransactionListView> {
+        val signaturesMap = transactionToInputDataViewMapper.transform(source).associateBy { it.originalValue }
+
         return source.map { transaction ->
             val transactionFee = transactionService.getTransactionFees(transaction)
             val burntFees = transactionService.getTransactionBurntFees(transaction)
 
-            val inputDataView = transaction.input?.let { transactionToInputDataViewMapper.transformSingle(it) }
+            val inputDataView = signaturesMap[transaction.input]
             val signature = inputDataView?.decodedValue?.signature
             val methodId = transaction.getMethodId()
 
