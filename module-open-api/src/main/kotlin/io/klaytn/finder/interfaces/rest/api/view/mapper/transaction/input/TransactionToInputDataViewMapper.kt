@@ -139,19 +139,21 @@ class TransactionToInputDataViewMapper(
         )
     }
 
-    override fun transform(source: List<Transaction>) = transformList(source.map { it.input!! })
+    override fun transform(source: List<Transaction>) = transformList(source.mapNotNull {it.input})
 
     fun transformList(inputList: List<String>): List<TransactionInputDataView> {
-        val bytesList = inputList.map{ toBytes(it) }
+        val bytes0x = inputList.filter { it.length < 10 }.map { TransactionInputDataView(it, null, "") }
+        val _inputList = inputList.filter { it.length >= 10 }
+        val bytesList = _inputList.filter{ it.length >= 10}.map{ toBytes(it) }
         val functionSignaturesMap = signatureService.getFunctionSignatures(bytesList)
-        val encodedList = inputList.map{ toEncodedValue(it) }
+        val encodedList = _inputList.map{ toEncodedValue(it) }
         val decodedList = encodedList.mapIndexed { index, encoded ->
             val signatures = functionSignaturesMap.getOrDefault(bytesList[index], emptyList())
             toDecodedValue(signatures, encoded)
         }
-        val utf8List = inputList.map{ toUtf8Value(it) }
-        return inputList.mapIndexed { index, input ->
+        val utf8List = _inputList.map{ toUtf8Value(it) }
+        return _inputList.mapIndexed { index, input ->
             toTransactionInputDataView(input, bytesList[index], decodedList[index], utf8List[index])
-        }
+        } + bytes0x
     }
 }
