@@ -11,6 +11,9 @@ data class TransactionListView(
     @Schema(title="Transaction Hash")
     val transactionHash: String,
 
+    @Schema(title="Transaction Index")
+    val transactionIndex: Int,
+
     @Schema(title="Block #")
     val blockId: Long,
 
