@@ -16,6 +16,9 @@ data class TokenTransferListView(
     @Schema(title = "Transaction Hash")
     val transactionHash: String,
 
+    @Schema(title = "Transaction Index")
+    val transactionIndex: Int?,
+
     @Schema(title = "Transaction Time")
     val datetime: Date,
 
