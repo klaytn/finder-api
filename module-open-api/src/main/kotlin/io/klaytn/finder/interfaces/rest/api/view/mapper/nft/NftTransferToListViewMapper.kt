@@ -26,6 +26,7 @@ class NftTransferToListViewMapper(
                 blockId = nftTransfer.blockNumber,
                 transactionHash = nftTransfer.transactionHash,
                 transactionIndex = transaction?.transactionIndex,
+                feePayer = transaction?.feePayer,
                 datetime = DateUtils.from(nftTransfer.timestamp),
                 from = nftTransfer.from.address,
                 to = nftTransfer.to?.address,
