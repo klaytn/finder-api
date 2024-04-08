@@ -31,6 +31,7 @@ class TokenTransferToListViewMapper(
                 blockId = tokenTransfer.blockNumber,
                 transactionHash = tokenTransfer.transactionHash,
                 transactionIndex = transaction?.transactionIndex,
+                feePayer = transaction?.feePayer,
                 datetime = DateUtils.from(tokenTransfer.timestamp),
                 from = tokenTransfer.from.address,
                 to = tokenTransfer.to?.address,
