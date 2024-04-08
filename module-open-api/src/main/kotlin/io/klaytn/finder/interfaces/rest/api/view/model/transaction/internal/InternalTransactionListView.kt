@@ -19,6 +19,9 @@ data class InternalTransactionListView(
     @Schema(title="Transaction Index")
     val transactionIndex: Int,
 
+    @Schema(title="Fee Payer")
+    val feePayer: String?,
+
     @Schema(title="Transaction Time (UTC)")
     val datetime: Date?,
 
