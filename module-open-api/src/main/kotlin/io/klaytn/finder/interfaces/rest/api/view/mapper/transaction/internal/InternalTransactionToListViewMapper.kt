@@ -33,6 +33,7 @@ class InternalTransactionToListViewMapper(
                 callId = it.callId,
                 blockId = it.blockNumber,
                 transactionHash = transaction?.transactionHash,
+                feePayer = transaction?.feePayer,
                 transactionIndex = it.transactionIndex,
                 datetime = transaction?.timestamp?.let { timestamp -> DateUtils.from(timestamp) },
                 type = it.type,
