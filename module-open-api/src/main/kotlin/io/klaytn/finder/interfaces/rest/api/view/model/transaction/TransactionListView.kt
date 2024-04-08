@@ -26,6 +26,9 @@ data class TransactionListView(
     @Schema(title="Address (to)")
     val to: String?,
 
+    @Schema(title="Fee Payer")
+    val feePayer: String?,
+
     @Schema(title="Transaction Type")
     val transactionType: TransactionTypeView,
 
