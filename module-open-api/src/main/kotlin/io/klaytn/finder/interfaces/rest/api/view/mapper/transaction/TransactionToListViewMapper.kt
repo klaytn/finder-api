@@ -30,6 +30,7 @@ class TransactionToListViewMapper(
 
             TransactionListView(
                 transactionHash = transaction.transactionHash,
+                transactionIndex = transaction.transactionIndex,
                 blockId = transaction.blockNumber,
                 datetime = DateUtils.from(transaction.timestamp),
                 from = transaction.from.address,
