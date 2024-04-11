@@ -31,7 +31,7 @@ data class KlaytnSquareGovernanceCouncilSummaryResult(
         val name: String,
         @JsonProperty("joined_at") val joinedAt: Date,
         val thumbnail: String,
-        val website: String,
+        val websites: List<Map<String, String>>?,
         @JsonProperty("gc_config_by_site") val gcConfigBySite: String?
 )
 
