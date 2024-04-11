@@ -64,7 +64,12 @@ class GovernanceCouncilSyncService(
         governanceCouncilsFromAPI.result.forEach {
             val squareId = it.id
             val squareDetailWebUrl = "$squareWebUrl/GC/Detail?id=${it.id}"
-            val gcWebsites = toWebsites(it.website)
+            var gcWebsites: List<String> = emptyList()
+            val websitesList = it.websites as? List<Map<String, String>>
+            if (websitesList != null) {
+                gcWebsites = websitesList.mapNotNull { it["url"] }.filter { site -> site.isNotBlank() }
+            }
+
 
             val newGovernanceCouncil =
                 governanceCouncilMapFromDB.getOrDefault(squareId,
@@ -170,21 +175,6 @@ class GovernanceCouncilSyncService(
             })
     }
 
-    private fun toWebsites(website: String) =
-        if (website.startsWith("[")) {
-            try {
-                objectMapper.readValue(
-                    website.toByteArray(),
-                    object : TypeReference<List<String>>() {}).filter { site -> site.isNotBlank() }
-            } catch (exception: Exception) {
-                val websiteMaps = objectMapper.readValue(
-                    website.toByteArray(),
-                    object : TypeReference<List<Map<String, String>>>() {})
-                websiteMaps.mapNotNull { it["url"] }.filter { site -> site.isNotBlank() }
-            }
-        } else {
-            listOf(website)
-        }
 
     private fun getTagName(addressType: GovernanceCouncilContractType) =
         when (addressType) {
