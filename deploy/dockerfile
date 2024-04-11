@@ -1,4 +1,4 @@
-FROM --platform=linux/x86_64 asia-northeast3-docker.pkg.dev/klaytn-finder/finder-base/1.0.0:latest
+FROM --platform=linux/x86_64 asia-northeast3-docker.pkg.dev/klaytn-finder/finder-prod/finder-base:1.0.0
 USER root
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
