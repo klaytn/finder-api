@@ -13,6 +13,9 @@ import io.klaytn.finder.infra.utils.PageUtils
 import io.klaytn.finder.infra.web.model.SimplePageRequest
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 @Service
 class InternalTransactionService(
@@ -92,28 +95,32 @@ class InternalTransactionCachedService(
         }
 
         val internalTransactionsMap = mutableMapOf<String, InternalTransaction>()
-        shardMap.forEach {
-            ShardNumContextHolder.setDataSourceType(it.key)
-            try {
-                internalTransactionsMap.putAll(
-                    cacheUtils.getEntities(CacheName.INTERNAL_TRANSACTION,
-                        InternalTransaction::class.java,
-                        InternalTransaction::internalTxId,
-                        it.value,
-                        internalTransactionRepository::findAllByInternalTxIdIn
+        val executor = Executors.newFixedThreadPool(shardMap.size)
+        val futures = mutableListOf<Future<Unit>>()
+
+        shardMap.forEach { (shardNum, ids) ->
+            val future = executor.submit(Callable<Unit> {
+                ShardNumContextHolder.setDataSourceType(shardNum)
+                try {
+                    internalTransactionsMap.putAll(
+                        cacheUtils.getEntities(CacheName.INTERNAL_TRANSACTION,
+                            InternalTransaction::class.java,
+                            InternalTransaction::internalTxId,
+                            ids,
+                            internalTransactionRepository::findAllByInternalTxIdIn
+                        )
                     )
-                )
-            } finally {
-                ShardNumContextHolder.clear()
-            }
+                } finally {
+                    ShardNumContextHolder.clear()
+                }
+            })
+            futures.add(future)
         }
 
-        accountAddressService.fillAccountAddress(
-            internalTransactionsMap.values.map { it.from }.toList(),
-            internalTransactionsMap.values.mapNotNull { it.to }.toList(),
-        )
-        return searchIds.filter { internalTransactionsMap.containsKey(it) }.mapNotNull { internalTransactionsMap[it] }
-            .toList()
+        futures.forEach { it.get() }
+        executor.shutdown()
+
+        return internalTransactionsMap.values.toList().filterNotNull()
     }
 
     fun getIdsByBlockNumber(blockNumber: Long, simplePageRequest: SimplePageRequest): List<InternalTxId> {
