@@ -110,10 +110,10 @@ class InternalTransactionCachedService(
                             internalTransactionRepository::findAllByInternalTxIdIn
                         )
                     )
-                } catch (e: Exception) {
-                    throw e
-                } finally {
                     ShardNumContextHolder.clear()
+                } catch (e: Exception) {
+                    ShardNumContextHolder.clear()
+                    throw e
                 }
             })
             futures.add(future)
