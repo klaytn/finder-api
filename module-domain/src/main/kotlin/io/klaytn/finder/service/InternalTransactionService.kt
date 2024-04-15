@@ -100,8 +100,8 @@ class InternalTransactionCachedService(
 
         shardMap.forEach { (shardNum, ids) ->
             val future = executor.submit(Callable<Unit> {
-                ShardNumContextHolder.setDataSourceType(shardNum)
                 try {
+                ShardNumContextHolder.setDataSourceType(shardNum)
                     internalTransactionsMap.putAll(
                         cacheUtils.getEntities(CacheName.INTERNAL_TRANSACTION,
                             InternalTransaction::class.java,
@@ -110,8 +110,10 @@ class InternalTransactionCachedService(
                             internalTransactionRepository::findAllByInternalTxIdIn
                         )
                     )
-                } finally {
                     ShardNumContextHolder.clear()
+                } catch (e: Exception) {
+                    ShardNumContextHolder.clear()
+                    throw e
                 }
             })
             futures.add(future)
@@ -119,8 +121,7 @@ class InternalTransactionCachedService(
 
         futures.forEach { it.get() }
         executor.shutdown()
-
-        return internalTransactionsMap.values.toList().filterNotNull()
+        return searchIds.filter { internalTransactionsMap.containsKey(it) }.mapNotNull { internalTransactionsMap[it] }.toList()
     }
 
     fun getIdsByBlockNumber(blockNumber: Long, simplePageRequest: SimplePageRequest): List<InternalTxId> {
