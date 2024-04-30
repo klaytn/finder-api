@@ -60,7 +60,9 @@ class InternalTransactionService(
         val totalCount =
             internalTransactionIndexService.countByAccountAddress(accountAddress, blockNumberRange)
         PageUtils.checkPageParameter(simplePageRequest, totalCount)
-
+        if (totalCount == 0L) {
+            return PageUtils.getPage(emptyList<InternalTransaction>(), simplePageRequest, totalCount)
+        }
         val contents = internalTransactionIndexService.getIdsByAccountAddress(
             accountAddress, blockNumberRange, simplePageRequest)
             .map { it.internalTxId }
