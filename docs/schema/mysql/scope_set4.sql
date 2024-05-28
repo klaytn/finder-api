@@ -73,7 +73,7 @@ CREATE TABLE `token_info`
 
 CREATE TABLE `token_time_series`
 (
-    `idx`                 bigint NOT NULL AUTO_INCREMENT,
+    `id`                  bigint NOT NULL AUTO_INCREMENT,
     `token_info_id`       bigint NOT NULL,
     `symbol`              varchar(50)  DEFAULT NULL,
     `price`               varchar(255) DEFAULT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE `token_time_series`
     `timestamp`           int          DEFAULT NULL,
     `created_at`          datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     `updated_at`          datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    PRIMARY KEY (`idx`),
+    PRIMARY KEY (`id`),
     UNIQUE KEY `ux_tokeninfoid` (`token_info_id`,`symbol`,`timestamp`) USING BTREE,
     KEY                   `ix_tokeninfoid` (`token_info_id`,`symbol`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

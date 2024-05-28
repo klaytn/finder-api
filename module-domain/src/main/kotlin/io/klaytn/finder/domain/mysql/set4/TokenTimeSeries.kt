@@ -9,7 +9,7 @@ import javax.persistence.Table
 @Table(name = "token_time_series")
 data class TokenTimeSeries(
     @Column()
-    val tokenInfoId: Int,
+    val tokenInfoId: Long,
 
     @Column()
     val symbol: String,

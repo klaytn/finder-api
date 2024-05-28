@@ -30,7 +30,6 @@ class CoinMarketCapInterceptor : Interceptor {
         val response = chain.proceed(request)
         val json = response.body?.string() ?: "{}"
         val tree = mapper.readTree(json).at("/data")
-        println(tree)
         val coinInfoList = tree.fields().asSequence().map { entry ->
             val node = entry.value
             CoinPriceInfo(
@@ -43,7 +42,6 @@ class CoinMarketCapInterceptor : Interceptor {
                 marketcap = node.at("/quote/USD/market_cap").asDouble()
             )
         }.toList()
-        println(coinInfoList)
 
         return response.newBuilder()
             .message(response.message)
