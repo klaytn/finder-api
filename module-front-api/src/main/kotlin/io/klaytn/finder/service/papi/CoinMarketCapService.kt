@@ -19,9 +19,11 @@ class CoinMarketCapService(
     fun getTokenPriceInfo(): List<TokenTimeSeries> {
         val tokenInfoWithCmcId = tokenInfoRepository.findByCmcIdIsNotNull()
         val cmcIdsString = tokenInfoWithCmcId.map { it.cmcId }.joinToString(separator = ",")
+
         val tokenPriceInfoMap =
             coinMarketCapClient.getTokenPriceInfo(cmcIdsString).orElseThrow { IllegalStateException() }
                 .associateBy { it.id }
+        val klayPrice = tokenPriceInfoMap[4256]?.price?.toBigDecimal() ?: BigDecimal.ZERO
 
         val contractList = tokenInfoWithCmcId.map { it.contractAddress }
         val contracts = contractService.getContracts(contractList)
@@ -34,14 +36,22 @@ class CoinMarketCapService(
                 (contract?.totalSupply?.multiply(tokenPriceInfo?.price?.toBigDecimal() ?: BigDecimal.ZERO)).toString()
 
             if (contract != null && tokenPriceInfo != null) {
+                val tokenPrice = tokenPriceInfo.price.toBigDecimal() ?: BigDecimal.ZERO
+
+                val kaiaPrice = if (tokenPrice > BigDecimal.ZERO) {
+                    tokenPrice.divide(klayPrice, 18, BigDecimal.ROUND_HALF_UP).toString()
+                } else {
+                    BigDecimal.ZERO.toString()
+                }
+
                 TokenTimeSeries(
                     tokenInfoId = tokenInfo.id,
                     symbol = tokenInfo.symbol,
-                    price = tokenPriceInfo.price.toString(),
-                    kaiaPrice = "0",
-                    changeRate = tokenPriceInfo.percentchange24h.toString(),
-                    volume = tokenPriceInfo.volume24h.toString(),
-                    marketCap = tokenPriceInfo.marketcap.toString(),
+                    price = tokenPriceInfo.price,
+                    kaiaPrice,
+                    changeRate = tokenPriceInfo.percentchange24h,
+                    volume = tokenPriceInfo.volume24h,
+                    marketCap = tokenPriceInfo.marketcap,
                     onChainMarketCap,
                     timestamp = (System.currentTimeMillis() / 1000).toInt(),
                 )

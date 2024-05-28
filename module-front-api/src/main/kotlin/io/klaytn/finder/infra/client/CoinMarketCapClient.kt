@@ -7,6 +7,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.math.BigDecimal
 
 interface CoinMarketCapClient {
     @GET("/v2/cryptocurrency/quotes/latest")
@@ -17,10 +18,10 @@ data class CoinPriceInfo(
     val id: Int,
     val name: String,
     val symbol: String,
-    val price: Double,
-    val volume24h: Double,
-    val percentchange24h: Double,
-    val marketcap: Double,
+    val price: String,
+    val volume24h: String,
+    val percentchange24h: String,
+    val marketcap: String,
 )
 
 class CoinMarketCapInterceptor : Interceptor {
@@ -36,10 +37,10 @@ class CoinMarketCapInterceptor : Interceptor {
                 id = node.at("/id").asInt(),
                 name = node.at("/name").asText(),
                 symbol = node.at("/symbol").asText(),
-                price = node.at("/quote/USD/price").asDouble(),
-                volume24h = node.at("/quote/USD/volume_24h").asDouble(),
-                percentchange24h = node.at("/quote/USD/percent_change_24h").asDouble(),
-                marketcap = node.at("/quote/USD/market_cap").asDouble()
+                price = BigDecimal(node.at("/quote/USD/price").asText()).toPlainString(),
+                volume24h = BigDecimal(node.at("/quote/USD/volume_24h").asText()).toPlainString(),
+                percentchange24h = BigDecimal(node.at("/quote/USD/percent_change_24h").asText()).toPlainString(),
+                marketcap = BigDecimal(node.at("/quote/USD/market_cap").asText()).toPlainString()
             )
         }.toList()
 
