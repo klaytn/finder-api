@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TokenInfoRepository : BaseRepository<TokenInfo> {
-
+    fun findByCmcIdIsNotNull(): List<TokenInfo>
 }
