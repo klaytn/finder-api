@@ -7,6 +7,7 @@ import io.klaytn.finder.infra.client.CoinMarketCapClient
 import io.klaytn.finder.infra.client.CoinMarketCapInterceptor
 import io.klaytn.finder.infra.client.ContractCompilerClient
 import io.klaytn.finder.infra.client.KlaytnSquareClient
+import io.klaytn.finder.infra.client.KaiaSquareClient
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -29,6 +30,10 @@ class ClientConfig(
     @Bean
     fun klaytnSquareClient() =
         createClient(KlaytnSquareClient::class, clientProperties.urls["square-api"]!!)
+
+    @Bean
+    fun kaiaSquareClient() =
+        createClient(KaiaSquareClient::class, clientProperties.urls["square-api"]!!)
 
     @Bean
     fun coinMarketCapClient() =

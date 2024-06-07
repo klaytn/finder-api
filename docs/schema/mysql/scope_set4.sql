@@ -89,3 +89,61 @@ CREATE TABLE `token_time_series`
     UNIQUE KEY `ux_tokeninfoid` (`token_info_id`,`symbol`,`timestamp`) USING BTREE,
     KEY                   `ix_tokeninfoid` (`token_info_id`,`symbol`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `governance_councils_info`
+(
+    `id`             bigint                                                        NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `square_id`      bigint                                                        NOT NULL COMMENT 'id of Klaytn square',
+    `square_link`    varchar(200)                                                  NOT NULL COMMENT 'link of Klaytn square',
+    `name`           varchar(200)                                                  NOT NULL COMMENT 'name of Klaytn square',
+    `thumbnail`      varchar(200)                                                  NOT NULL COMMENT 'gc icon url',
+    `website`        varchar(200)                                                  NOT NULL COMMENT 'gc website',
+    `summary`        text,
+    `description`    text,
+    `apy`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+    `total_staking`  varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `is_foundation`  tinyint                                                       DEFAULT '0',
+    `joined_at`      datetime(6) DEFAULT NULL COMMENT 'gc joined date',
+    `activated_at`   datetime(6) DEFAULT NULL COMMENT 'gc activated date',
+    `deactivated_at` datetime(6) DEFAULT NULL COMMENT 'gc deactivated date',
+    `created_at`     datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'created date',
+    `updated_at`     datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT 'modified date',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `governance_council_contracts`
+(
+    `id`           bigint                                                       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `square_id`    bigint                                                       NOT NULL COMMENT 'id of klaytn square',
+    `address`      varchar(42) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'contract address',
+    `address_type` tinyint                                                      NOT NULL COMMENT 'node(0), staking(1), reward(2)',
+    `version`      tinyint DEFAULT NULL COMMENT 'staking version',
+    `created_at`   datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'created date',
+    `updated_at`   datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT 'modified date',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `ix_address` (`address`),
+    KEY            `ix_squareid` (`square_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `governance_council_communities`
+(
+    `id`           bigint       NOT NULL AUTO_INCREMENT,
+    `community_id` bigint DEFAULT NULL,
+    `name`         varchar(200) NOT NULL,
+    `links`        varchar(200) NOT NULL,
+    `thumbnail`    varchar(200) NOT NULL,
+    `created_at`   datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'created date',
+    `updated_at`   datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT 'modified date',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `governance_council_categories`
+(
+    `id`            bigint       NOT NULL AUTO_INCREMENT,
+    `category_id`   bigint       NOT NULL,
+    `category_name` varchar(200) NOT NULL,
+    `square_id`     bigint       NOT NULL,
+    `created_at`    datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'created date',
+    `updated_at`    datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT 'modified date',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
