@@ -13,38 +13,68 @@ data class GovernanceCouncilsInfo (
     val squareId: Long,
 
     @Column
-    val squareLink: String,
+    var squareLink: String,
 
     @Column
-    val name: String,
+    var name: String,
 
     @Column
-    val thumbnail: String,
+    var thumbnail: String,
 
     @Column
-    val website: String,
+    var website: String,
 
     @Column(columnDefinition = "TEXT")
-    val summary: String,
+    var summary: String?,
 
     @Column(columnDefinition = "TEXT")
-    val description: String,
+    var description: String,
 
     @Column
-    val apy: String,
+    var apy: String,
 
     @Column
-    val totalStaking: String,
+    var totalStaking: String,
 
     @Column(columnDefinition = "TINYINT")
-    val isFoundation: Boolean,
+    var isFoundation: Boolean,
 
     @Column
-    val joinedAt: LocalDateTime?,
+    var joinedAt: LocalDateTime?,
 
     @Column
-    val activatedAt: LocalDateTime?,
+    var activatedAt: LocalDateTime?,
 
     @Column
-    val deactivatedAt: LocalDateTime?
-): BaseEntity()
+    var deactivatedAt: LocalDateTime?
+): BaseEntity() {
+    companion object {
+        fun of(
+            squareId: Long,
+            squareLink: String,
+            name: String,
+            thumbnail: String,
+            website: String,
+            summary: String?,
+            description: String,
+            apy: String,
+            totalStaking: String,
+            isFoundation: Boolean,
+            joinedAt: LocalDateTime
+        ) = GovernanceCouncilsInfo(
+            squareId = squareId,
+            squareLink = squareLink,
+            name = name,
+            thumbnail = thumbnail,
+            website = website,
+            summary = summary,
+            description = description,
+            apy = apy,
+            totalStaking = totalStaking,
+            isFoundation = isFoundation,
+            joinedAt = joinedAt,
+            activatedAt = null,
+            deactivatedAt = null
+        )
+    }
+}

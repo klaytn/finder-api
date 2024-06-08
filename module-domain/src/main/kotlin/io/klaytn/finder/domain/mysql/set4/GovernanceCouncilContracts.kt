@@ -1,5 +1,6 @@
 package io.klaytn.finder.domain.mysql.set4
 
+import io.klaytn.finder.domain.common.GovernanceCouncilContractType
 import io.klaytn.finder.domain.mysql.BaseEntity
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -16,7 +17,7 @@ data class GovernanceCouncilContracts (
     val address: String,
 
     @Column(columnDefinition = "TINYINT")
-    val addressType: Int,
+    val addressType: GovernanceCouncilContractType,
 
     @Column(columnDefinition = "TINYINT")
     val version: Int,

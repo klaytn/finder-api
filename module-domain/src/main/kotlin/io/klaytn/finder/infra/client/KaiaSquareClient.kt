@@ -16,14 +16,14 @@ interface KaiaSquareClient {
     @Headers("Content-Type: application/json", "Accept:application/json")
     @GET("/api/v1/councils/{squareId}")
     fun getGovernanceCouncil(
-            @Path("squareId") squareId: Long
+        @Path("squareId") squareId: Long
     ): Call<KaiaSquareResult<KaiaSquareGovernanceCouncilDetailResult>>
 }
 
 data class KaiaSquareResult<T>(
-        val code: Int,
-        @JsonProperty("err_msg") val errorMessage: String,
-        val result: T
+    val code: Int,
+    @JsonProperty("err_msg") val errorMessage: String,
+    val result: T
 )
 
 data class Category(
@@ -32,31 +32,40 @@ data class Category(
 )
 
 data class SiteConf(
-    @JsonProperty("is_foundation") val isFoundation: Boolean,
-    val status: String,
+    val isFoundation: Boolean,
 )
 
 data class KaiaSquareGovernanceCouncilSummaryResult(
-        val id: Long,
-        val name: String,
-        val summary: String? = null,
-        val description: String,
-        val categories: List<Category>,
-        @JsonProperty("site_conf") val siteConf: SiteConf? = null,
-        @JsonProperty("joined_at") val joinedAt: Date,
-        val thumbnail: String,
-        val websites: List<Map<String, String>>?,
-        @JsonProperty("gc_config_by_site") val gcConfigBySite: String?
+    val id: Long,
+    val name: String,
+    val summary: String? = null,
+    val description: String,
+    val categories: List<Category>,
+    @JsonProperty("site_conf") val siteConf: SiteConf? = null,
+    @JsonProperty("joined_at") val joinedAt: Date,
+    val thumbnail: String,
+    val websites: List<Map<String, String>>?,
+    @JsonProperty("gc_config_by_site") val gcConfigBySite: String?,
+    val staking: KaiaSquareGovernanceCouncilStaking,
 )
 
 data class KaiaSquareGovernanceCouncilDetailResult(
-        val id: Long,
-        val name: String,
-        @JsonProperty("contracts") val contracts: List<KaiaSquareGovernanceCouncilContract>
+    val id: Long,
+    val name: String,
+    @JsonProperty("contracts") val contracts: List<KaiaSquareGovernanceCouncilContract>
 )
 
-data class KaiaSquareGovernanceCouncilContract(val address: String, val type: String)
+data class KaiaSquareGovernanceCouncilContract(
+    val address: String,
+    val type: String,
+    val version: Int? = null
+)
 
 data class KaiaSquareGovernanceCouncilConfig(
-        val status: String,
+    val status: String,
+)
+
+data class KaiaSquareGovernanceCouncilStaking(
+    @JsonProperty("total_staking") val totalStaking: String,
+    val apy: String,
 )
