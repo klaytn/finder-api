@@ -143,6 +143,10 @@ class GovernanceCouncilInfoService(
             }
         }
 
+        //TODO: categories, communities
+
+
+
         if (!dryRun) {
             if (newGovernanceCouncils.isNotEmpty()) {
                 governanceCouncilsInfoRepository.saveAll(newGovernanceCouncils)

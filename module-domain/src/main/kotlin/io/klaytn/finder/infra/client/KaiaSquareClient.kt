@@ -52,7 +52,8 @@ data class KaiaSquareGovernanceCouncilSummaryResult(
 data class KaiaSquareGovernanceCouncilDetailResult(
     val id: Long,
     val name: String,
-    @JsonProperty("contracts") val contracts: List<KaiaSquareGovernanceCouncilContract>
+    @JsonProperty("contracts") val contracts: List<KaiaSquareGovernanceCouncilContract>,
+    val communities: List<KaiaSquareGovernanceCouncilCommunity>
 )
 
 data class KaiaSquareGovernanceCouncilContract(
@@ -68,4 +69,15 @@ data class KaiaSquareGovernanceCouncilConfig(
 data class KaiaSquareGovernanceCouncilStaking(
     @JsonProperty("total_staking") val totalStaking: String,
     val apy: String,
+)
+
+data class KaiaSquareGovernanceCouncilCommunityLink(
+    val url: String
+)
+
+data class KaiaSquareGovernanceCouncilCommunity(
+    val id: Long,
+    val name: String,
+    val thumbnail: String,
+    val links: List<KaiaSquareGovernanceCouncilCommunityLink>
 )

@@ -15,6 +15,9 @@ data class GovernanceCouncilCommunities (
     val name: String,
 
     @Column
+    val squareId: Long,
+
+    @Column
     val links: String,
 
     @Column
