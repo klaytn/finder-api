@@ -22,4 +22,20 @@ data class GovernanceCouncilCommunities (
 
     @Column
     val thumbnail: String,
-) : BaseEntity()
+) : BaseEntity() {
+    companion object {
+        fun of(
+            communityId: Long,
+            name: String,
+            squareId: Long,
+            links: String,
+            thumbnail: String,
+        ) = GovernanceCouncilCommunities(
+            communityId = communityId,
+            name = name,
+            squareId = squareId,
+            links = links,
+            thumbnail = thumbnail,
+        )
+    }
+}

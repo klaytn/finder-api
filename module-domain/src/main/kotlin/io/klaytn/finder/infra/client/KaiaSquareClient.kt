@@ -53,7 +53,7 @@ data class KaiaSquareGovernanceCouncilDetailResult(
     val id: Long,
     val name: String,
     @JsonProperty("contracts") val contracts: List<KaiaSquareGovernanceCouncilContract>,
-    val communities: List<KaiaSquareGovernanceCouncilCommunity>
+    val communities: List<KaiaSquareGovernanceCouncilCommunity>? = null,
 )
 
 data class KaiaSquareGovernanceCouncilContract(

@@ -13,8 +13,20 @@ data class GovernanceCouncilCategories (
     val categoryId: Long,
 
     @Column
-    val categoryName: String,
+    var categoryName: String,
 
     @Column
     val squareId: Long,
-) : BaseEntity()
+) : BaseEntity() {
+    companion object {
+        fun of(
+            categoryId: Long,
+            categoryName: String,
+            squareId: Long,
+        ) = GovernanceCouncilCategories(
+            categoryId = categoryId,
+            categoryName = categoryName,
+            squareId = squareId,
+        )
+    }
+}

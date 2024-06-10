@@ -1,6 +1,5 @@
 package io.klaytn.finder.service
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.klaytn.commons.utils.logback.logger
 import io.klaytn.commons.utils.retrofit2.orElseThrow
@@ -15,7 +14,8 @@ import io.klaytn.finder.domain.mysql.set4.GovernanceCouncilCategoriesRepository
 import io.klaytn.finder.domain.mysql.set4.GovernanceCouncilCommunitiesRepository
 import io.klaytn.finder.domain.mysql.set4.GovernanceCouncilContractsRepository
 import io.klaytn.finder.infra.client.KaiaSquareClient
-import io.klaytn.finder.infra.client.KlaytnSquareClient
+import io.klaytn.finder.infra.client.KaiaSquareGovernanceCouncilCommunity
+import io.klaytn.finder.infra.client.KaiaSquareGovernanceCouncilCommunityLink
 import io.klaytn.finder.infra.db.DbConstants
 import io.klaytn.finder.infra.utils.DateUtils
 import io.klaytn.finder.service.governancecouncil.GovernanceCouncilCachedService
@@ -58,16 +58,26 @@ class GovernanceCouncilInfoService(
         val governanceCouncilInfoMapFromDB = governanceCouncilsInfoRepository.findAll().associateBy { it.squareId }
         val governanceCouncilContractMapFromDB =
             governanceCouncilContractsRepository.findAll().associateBy { it.address }
+        val governanceCouncilCategoryMapFromDB =
+            governanceCouncilCategoriesRepository.findAll().associateBy { Pair(it.squareId, it.categoryId) }
+        val governanceCouncilCommunityMapFromDB =
+            governanceCouncilCommunitiesRepository.findAll().associateBy { Pair(it.squareId, it.communityId) }
 
         // Checklist of items to be deleted from the database
         val deletedSquareIds = governanceCouncilInfoMapFromDB.keys.toMutableSet()
         val deletedSquareContractAddresses = governanceCouncilContractMapFromDB.keys.toMutableSet()
+        val deletedSquareCategories = governanceCouncilCategoryMapFromDB.keys.toMutableSet()
+        val deletedSquareCommunities = governanceCouncilCommunityMapFromDB.keys.toMutableSet()
 
         val newGovernanceCouncils = mutableListOf<GovernanceCouncilsInfo>()
         val newGovernanceCouncilContracts = mutableListOf<GovernanceCouncilContracts>()
+        val newGovernanceCouncilCategories = mutableListOf<GovernanceCouncilCategories>()
+        val newGovernanceCouncilCommunities = mutableListOf<GovernanceCouncilCommunities>()
 
         val deleteGovernanceCouncils = mutableListOf<GovernanceCouncilsInfo>()
         val deleteGovernanceCouncilContracts = mutableListOf<GovernanceCouncilContracts>()
+        val deleteGovernanceCouncilCategories = mutableListOf<GovernanceCouncilCategories>()
+        val deleteGovernanceCouncilCommunities = mutableListOf<GovernanceCouncilCommunities>()
 
         governanceCouncilsFromAPI.result.forEach {
             val squareId = it.id
@@ -112,6 +122,32 @@ class GovernanceCouncilInfoService(
                 newGovernanceCouncils.add(this)
             }
 
+            val categories = it.categories
+            if (categories.isNotEmpty()) {
+                categories.forEach { category ->
+                    val categoryId = category.id
+                    val categoryName = category.name
+
+                    val newGovernanceCouncilCategory =
+                        governanceCouncilCategoryMapFromDB.getOrDefault(
+                            Pair(squareId, categoryId),
+                            GovernanceCouncilCategories.of(
+                                squareId = squareId,
+                                categoryId = categoryId,
+                                categoryName = categoryName
+                            )
+                        )
+
+                    with(newGovernanceCouncilCategory) {
+                        if (this.id != 0L) {
+                            this.categoryName = categoryName
+                        }
+                        newGovernanceCouncilCategories.add(this)
+                    }
+                    deletedSquareCategories.remove(Pair(squareId, categoryId))
+                }
+            }
+
             governanceCouncilMapFromAPI[squareId]?.let { gcDetailResult ->
                 gcDetailResult.contracts.forEach { gcContract ->
                     if (!governanceCouncilContractMapFromDB.containsKey(gcContract.address)) {
@@ -125,6 +161,28 @@ class GovernanceCouncilInfoService(
                         )
                     }
                     deletedSquareContractAddresses.remove(gcContract.address)
+                }
+
+                gcDetailResult.communities?.forEach { community ->
+                    if (!governanceCouncilCommunityMapFromDB.containsKey(Pair(squareId, community.id))) {
+                        val links =
+                            (community.links as? List<KaiaSquareGovernanceCouncilCommunityLink>)?.map { link ->
+                                link.url
+                            }?.filter { site -> site.isNotBlank() } ?: emptyList()
+
+                        newGovernanceCouncilCommunities.add(
+                            GovernanceCouncilCommunities(
+                                squareId = squareId,
+                                communityId = community.id,
+                                name = community.name,
+                                links = objectMapper.writeValueAsString(
+                                    links
+                                ),
+                                thumbnail = community.thumbnail
+                            )
+                        )
+                    }
+                    deletedSquareCommunities.remove(Pair(squareId, community.id))
                 }
             }
 
@@ -143,9 +201,17 @@ class GovernanceCouncilInfoService(
             }
         }
 
-        //TODO: categories, communities
+        deletedSquareCategories.forEach {
+            governanceCouncilCategoryMapFromDB[it]?.let { gcCategory ->
+                deleteGovernanceCouncilCategories.add(gcCategory)
+            }
+        }
 
-
+        deletedSquareCommunities.forEach {
+            governanceCouncilCommunityMapFromDB[it]?.let { gcCommunity ->
+                deleteGovernanceCouncilCommunities.add(gcCommunity)
+            }
+        }
 
         if (!dryRun) {
             if (newGovernanceCouncils.isNotEmpty()) {
@@ -160,6 +226,20 @@ class GovernanceCouncilInfoService(
             }
             if (deleteGovernanceCouncilContracts.isNotEmpty()) {
                 governanceCouncilContractsRepository.deleteAll(deleteGovernanceCouncilContracts)
+            }
+
+            if (newGovernanceCouncilCategories.isNotEmpty()) {
+                governanceCouncilCategoriesRepository.saveAll(newGovernanceCouncilCategories)
+            }
+            if (deleteGovernanceCouncilCategories.isNotEmpty()) {
+                governanceCouncilCategoriesRepository.deleteAll(deleteGovernanceCouncilCategories)
+            }
+
+            if (newGovernanceCouncilCommunities.isNotEmpty()) {
+                governanceCouncilCommunitiesRepository.saveAll(newGovernanceCouncilCommunities)
+            }
+            if (deleteGovernanceCouncilCommunities.isNotEmpty()) {
+                governanceCouncilCommunitiesRepository.deleteAll(deleteGovernanceCouncilCommunities)
             }
 
             val allSquareIds = mutableSetOf<Long>()
