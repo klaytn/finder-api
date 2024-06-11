@@ -40,7 +40,7 @@ class GovernanceCouncilInfoService(
     private final val squareWebUrl = clientProperties.urls["square-web"]!!
 
     @Transactional(DbConstants.set4TransactionManager)
-    fun doSync(dryRun: Boolean): Any {
+    fun doSync(dryRun: Boolean): Boolean {
         // from Klaytn-Square
         val governanceCouncilsFromAPI =
             kaiaSquareClient.getGovernanceCouncils().orElseThrow { IllegalStateException(it) }

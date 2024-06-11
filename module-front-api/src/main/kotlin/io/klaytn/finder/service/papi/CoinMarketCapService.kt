@@ -16,7 +16,7 @@ class CoinMarketCapService(
     private val tokenTimeSeriesRepository: TokenTimeSeriesRepository,
     private val contractService: ContractService,
 ) {
-    fun getTokenPriceInfo(): List<TokenTimeSeries> {
+    fun getTokenPriceInfo(): Boolean {
         val tokenInfoWithCmcId = tokenInfoRepository.findByCmcIdIsNotNull()
         val cmcIdsString = tokenInfoWithCmcId.map { it.cmcId }.joinToString(separator = ",")
 
@@ -62,6 +62,6 @@ class CoinMarketCapService(
 
         tokenTimeSeriesRepository.saveAll(combinedList)
 
-        return combinedList
+        return true
     }
 }
