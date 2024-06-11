@@ -27,7 +27,8 @@ data class CoinPrice(
         val price: BigDecimal,
         val marketCap: BigDecimal,
         val marketCapDominance: BigDecimal,
-        val percentChange24h: BigDecimal
+        val percentChange24h: BigDecimal,
+        val volume24h: BigDecimal,
 )
 
 class CoinMarketCapInterceptor : Interceptor {
@@ -56,7 +57,8 @@ class CoinMarketCapInterceptor : Interceptor {
                         marketCapDominance =
                                 BigDecimal(tree.at("/quote/$unit/market_cap_dominance").asText()),
                         percentChange24h =
-                                BigDecimal(tree.at("/quote/$unit/percent_change_24h").asText())
+                                BigDecimal(tree.at("/quote/$unit/percent_change_24h").asText()),
+                        volume24h = BigDecimal(tree.at("/quote/$unit/volume_24h").asText()),
                 )
 
         return response.newBuilder()

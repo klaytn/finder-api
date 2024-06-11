@@ -48,10 +48,9 @@ class KlayPriceJob(
             "usdMarketCap" to usdPrice.marketCap.toPlainString(),
             "usdTotalSupply" to usdPrice.circulatingSupply.toPlainString(),
             "usdPercentChange24h" to usdPrice.percentChange24h.toPlainString(),
-            "btcPrice" to btcPrice.price.toPlainString()
+            "btcPrice" to btcPrice.price.toPlainString(),
+            "volume24h" to usdPrice.volume24h.toPlainString(),
         )
-
-        // TODO: Add volume
 
         redisTemplate.opsForHash<String, String>().putAll(redisKeyManagerForWorker.chainCommonKlayPrice, coinPrice)
         redisTemplate.convertAndSend(redisKeyManagerForWorker.chainCommonChannelKlayPrice,
