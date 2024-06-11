@@ -51,6 +51,8 @@ class KlayPriceJob(
             "btcPrice" to btcPrice.price.toPlainString()
         )
 
+        // TODO: Add volume
+
         redisTemplate.opsForHash<String, String>().putAll(redisKeyManagerForWorker.chainCommonKlayPrice, coinPrice)
         redisTemplate.convertAndSend(redisKeyManagerForWorker.chainCommonChannelKlayPrice,
             jacksonObjectMapper().writeValueAsString(coinPrice))
