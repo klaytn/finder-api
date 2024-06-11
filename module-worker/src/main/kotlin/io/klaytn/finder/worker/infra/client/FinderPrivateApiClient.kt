@@ -38,6 +38,11 @@ interface FinderPrivateApiClient {
         @Query("dryRun") dryRun: Boolean
     ): Call<SimpleApiResponse>
 
+    @PUT("/papi/v1/governance-councils/info")
+    fun governanceCouncilInfoSync(
+        @Query("dryRun") dryRun: Boolean
+    ): Call<SimpleApiResponse>
+
     @POST("/papi/v1/block-proposers/{yearMonth}/source")
     fun blockProposerSource(
         @Path("yearMonth") yearMonth: String,
