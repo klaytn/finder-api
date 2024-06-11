@@ -12,9 +12,6 @@ import retrofit2.http.Query
 interface CoinMarketCapClient {
     @GET("/v2/cryptocurrency/quotes/latest")
     fun getPrice(@Query("id") id: String, @Query("convert") unit: String): Call<CoinPrice>
-
-    @GET("/papi/v1/coin-market-cap/cryptocurrency")
-    fun getCoinMarketCap(): Call<SimpleApiResponse>
 }
 
 data class CoinPrice(

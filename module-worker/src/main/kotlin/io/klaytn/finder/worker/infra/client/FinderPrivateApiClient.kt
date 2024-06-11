@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface FinderPrivateApiClient {
     @POST("/papi/v1/function-signatures")
@@ -42,6 +39,9 @@ interface FinderPrivateApiClient {
     fun governanceCouncilInfoSync(
         @Query("dryRun") dryRun: Boolean
     ): Call<SimpleApiResponse>
+
+    @GET("/papi/v1/coin-market-cap/cryptocurrency")
+    fun getCoinMarketCap(): Call<SimpleApiResponse>
 
     @POST("/papi/v1/block-proposers/{yearMonth}/source")
     fun blockProposerSource(
