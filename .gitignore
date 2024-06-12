@@ -29,5 +29,5 @@ hs_err_pid*
 /module-gateway/build/
 */bin/*
 .metals/*
-
+**/out/
 conf.sh

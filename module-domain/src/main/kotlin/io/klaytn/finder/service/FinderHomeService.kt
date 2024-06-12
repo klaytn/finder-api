@@ -47,7 +47,7 @@ class FinderHomeService(
 
         return FinderTransactionHistory(
             transactionService.getMaxTransactionId().toBigDecimal(),
-            transactionCounts.takeLast(15))
+            transactionCounts.takeLast(30))
     }
 
     fun getBurntByGasFeeHistory(): FinderBurntByGasFeeHistory {
@@ -61,7 +61,7 @@ class FinderHomeService(
                 }
         } ?: emptyList()
 
-        return FinderBurntByGasFeeHistory(burntByGasFeeHistories.takeLast(15))
+        return FinderBurntByGasFeeHistory(burntByGasFeeHistories.takeLast(30))
     }
 
     fun getStatus() = getBlockNoAndTimestamp("block").let {
