@@ -475,8 +475,8 @@ CREATE TABLE `kaia_users`
     `created_at`         datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'created date',
     `updated_at`         datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT 'modified date',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `ux_username` (`name`) USING BTREE,
-    UNIQUE KEY `ux_email` (`email`) USING BTREE
+    UNIQUE KEY `ux_email` (`email`) USING BTREE,
+    UNIQUE KEY `ux_name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 CREATE TABLE `kaia_user_login_history`
