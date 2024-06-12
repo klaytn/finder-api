@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.Operation
 import io.klaytn.finder.service.KaiaUserService
 import org.springframework.web.bind.annotation.*
-import io.klaytn.finder.domain.mysql.set1.KaiaUser
+import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
 
 @Profile(ServerMode.API_MODE)
 @RestController
@@ -18,7 +18,7 @@ class KaiaUserController(
 ) {
     @Operation(description = "Sign Up")
     @PostMapping("/api/v1/kaia/users")
-    fun signUp(@RequestBody kaiaUser: KaiaUser) {
+    fun signUp(@RequestBody kaiaUser: KaiaUserSignupView) =
         kaiaUserService.signUp(kaiaUser)
-    }
+
 }

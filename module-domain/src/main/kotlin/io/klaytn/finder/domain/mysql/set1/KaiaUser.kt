@@ -19,7 +19,7 @@ data class KaiaUser (
     val password: String,
 
     @Column
-    val profileImage: String,
+    val profileImage: String?,
 
     @Column(columnDefinition = "TINYINT")
     val isSubscribed: Boolean,
