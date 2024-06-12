@@ -15,19 +15,20 @@ interface CoinMarketCapClient {
 }
 
 data class CoinPrice(
-        val id: Int,
-        val name: String,
-        val symbol: String,
-        val slug: String,
-        val numberOfMarketPairs: Int,
-        val circulatingSupply: BigDecimal,
-        val totalSupply: BigDecimal,
-        //    val dateAdded: LocalDateTime,
-        //    val lastUpdated: LocalDateTime,
-        val price: BigDecimal,
-        val marketCap: BigDecimal,
-        val marketCapDominance: BigDecimal,
-        val percentChange24h: BigDecimal
+    val id: Int,
+    val name: String,
+    val symbol: String,
+    val slug: String,
+    val numberOfMarketPairs: Int,
+    val circulatingSupply: BigDecimal,
+    val totalSupply: BigDecimal,
+    //    val dateAdded: LocalDateTime,
+    //    val lastUpdated: LocalDateTime,
+    val price: BigDecimal,
+    val marketCap: BigDecimal,
+    val marketCapDominance: BigDecimal,
+    val percentChange24h: BigDecimal,
+    val volume24h: BigDecimal
 )
 
 class CoinMarketCapInterceptor : Interceptor {
@@ -43,28 +44,29 @@ class CoinMarketCapInterceptor : Interceptor {
         val tree = mapper.readTree(json).at("/data/$id")
 
         val coinPrice =
-                CoinPrice(
-                        id = tree.at("/id").asInt(),
-                        name = tree.at("/name").asText(),
-                        symbol = tree.at("/symbol").asText(),
-                        slug = tree.at("/slug").asText(),
-                        numberOfMarketPairs = tree.at("/num_market_pairs").asInt(),
-                        circulatingSupply = BigDecimal(tree.at("/circulating_supply").asText()),
-                        totalSupply = BigDecimal(tree.at("/total_supply").asText()),
-                        price = BigDecimal(tree.at("/quote/$unit/price").asText()),
-                        marketCap = BigDecimal(tree.at("/quote/$unit/market_cap").asText()),
-                        marketCapDominance =
-                                BigDecimal(tree.at("/quote/$unit/market_cap_dominance").asText()),
-                        percentChange24h =
-                                BigDecimal(tree.at("/quote/$unit/percent_change_24h").asText())
-                )
+            CoinPrice(
+                id = tree.at("/id").asInt(),
+                name = tree.at("/name").asText(),
+                symbol = tree.at("/symbol").asText(),
+                slug = tree.at("/slug").asText(),
+                numberOfMarketPairs = tree.at("/num_market_pairs").asInt(),
+                circulatingSupply = BigDecimal(tree.at("/circulating_supply").asText()),
+                totalSupply = BigDecimal(tree.at("/total_supply").asText()),
+                price = BigDecimal(tree.at("/quote/$unit/price").asText()),
+                marketCap = BigDecimal(tree.at("/quote/$unit/market_cap").asText()),
+                marketCapDominance =
+                BigDecimal(tree.at("/quote/$unit/market_cap_dominance").asText()),
+                percentChange24h =
+                BigDecimal(tree.at("/quote/$unit/percent_change_24h").asText()),
+                volume24h = BigDecimal(tree.at("/quote/$unit/volume_24h").asText()),
+            )
 
         return response.newBuilder()
-                .message(response.message)
-                .body(
-                        mapper.writeValueAsString(coinPrice)
-                                .toResponseBody(response.body?.contentType())
-                )
-                .build()
+            .message(response.message)
+            .body(
+                mapper.writeValueAsString(coinPrice)
+                    .toResponseBody(response.body?.contentType())
+            )
+            .build()
     }
 }
