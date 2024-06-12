@@ -1,5 +1,6 @@
 package io.klaytn.finder.interfaces.rest.api.view.model.kaiauser
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema
@@ -14,8 +15,8 @@ data class KaiaUserSignupView (
     val password: String,
 
     @Schema(title="Profile Image")
-    val profileImage: String? = null,
+    @JsonProperty("profile_image") val profileImage: String?,
 
     @Schema(title="Subscription Status")
-    val isSubscribed: Boolean = false
+    @JsonProperty("is_subscribed") val isSubscribed: Boolean
 )

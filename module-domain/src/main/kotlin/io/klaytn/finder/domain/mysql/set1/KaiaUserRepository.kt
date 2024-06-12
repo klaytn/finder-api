@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 interface KaiaUserRepository: BaseRepository<KaiaUser> {
     fun existsByEmail(email: String): Boolean
     fun existsByName(name: String): Boolean
+    fun findByName(name: String): KaiaUser?
 }
