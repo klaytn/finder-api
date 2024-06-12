@@ -25,6 +25,7 @@ data class FinderKlayPrice(
         @Schema(title = "Klay Dollar Price Change Ratio") val usdPriceChanges: BigDecimal,
         @Schema(title = "Market Cap") val marketCap: BigDecimal,
         @Schema(title = "Total Supply") val totalSupply: BigDecimal,
+        @Schema(title = "Klay Dollar Volume 24h") val volume: BigDecimal,
 )
 
 @Schema

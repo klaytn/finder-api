@@ -87,6 +87,7 @@ class FinderHomeService(
         usdPrice = BigDecimal(klayPrice["usdPrice"] ?: defaultKlayPrice),
         btcPrice = BigDecimal(klayPrice["btcPrice"] ?: defaultKlayPrice),
         usdPriceChanges = BigDecimal(klayPrice["usdPercentChange24h"] ?: defaultKlayPrice),
+        volume = BigDecimal(klayPrice["volume24h"] ?: defaultKlayPrice),
         marketCap = BigDecimal(klayPrice["usdMarketCap"] ?: defaultKlayPrice),
         totalSupply = BigDecimal(klayPrice["usdTotalSupply"] ?: defaultKlayPrice),
     )
