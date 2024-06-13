@@ -4,8 +4,10 @@ import io.klaytn.finder.domain.mysql.set1.KaiaUser
 import io.klaytn.finder.domain.mysql.set1.KaiaUserRepository
 import io.klaytn.finder.infra.exception.InvalidRequestException
 import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserSignupViewMapper
+import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignInView
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
+import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.regex.Pattern
@@ -36,7 +38,7 @@ class KaiaUserService(
         return true
     }
 
-    fun signIn(kaiaUserSignIn: KaiaUserSignInView): Boolean {
+    fun signIn(kaiaUserSignIn: KaiaUserSignInView): KaiaUserView {
         val kaiaUser: KaiaUser = kaiaUserRepository.findByName(kaiaUserSignIn.userName)
             ?: throw InvalidRequestException("User not found")
 
@@ -44,8 +46,7 @@ class KaiaUserService(
             throw InvalidRequestException("Invalid password")
         }
 
-        //  TODO: Implement Mapper
-        return true
+        return KaiaUserViewMapper().transform(kaiaUser)
     }
 
     private fun isValidEmail(email: String): Boolean {
