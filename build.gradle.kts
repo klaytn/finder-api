@@ -75,6 +75,7 @@ subprojects {
     val springCloudVersion by extra { "3.1.3" }
     val curatorVersion by extra { "5.2.0" }
     val zookeeperVersion by extra { "3.6.3" }
+    val sendGridVersion by extra { "4.10.1" }
 
     dependencies {
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -99,7 +100,7 @@ subprojects {
         implementation("org.springdoc:springdoc-openapi-data-rest:$springDocVersion")
 
         implementation(
-                "org.springframework.cloud:spring-cloud-starter-zookeeper:$springCloudVersion"
+            "org.springframework.cloud:spring-cloud-starter-zookeeper:$springCloudVersion"
         )
         implementation("org.apache.curator:curator-framework:${curatorVersion}")
         implementation("org.apache.curator:curator-recipes:${curatorVersion}")
@@ -142,7 +143,8 @@ subprojects {
         api("org.springframework.cloud:spring-cloud-gcp-starter-storage:$googleCloudSdkVersion")
         api("org.springframework.cloud:spring-cloud-gcp-starter-secretmanager:$googleCloudSdkVersion")
 
-
+        // sendgrid
+        implementation("com.sendgrid:sendgrid-java:$sendGridVersion")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")

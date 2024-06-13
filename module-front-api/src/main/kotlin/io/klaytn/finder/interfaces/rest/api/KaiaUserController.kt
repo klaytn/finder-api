@@ -26,5 +26,4 @@ class KaiaUserController(
     @PostMapping("/api/v1/kaia/users/sign-in")
     fun signIn(@RequestBody kaiaUser: KaiaUserSignInView) =
         kaiaUserService.signIn(kaiaUser)
-
 }

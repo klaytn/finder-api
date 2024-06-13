@@ -11,6 +11,7 @@ finder:
       coin-market-cap: https://pro-api.coinmarketcap.com/
     keys:
       coin-market-cap: "${CMC_PRO_API_KEY}"
+      sendgrid-api-key: "${SENDGRID_API_KEY}"
 ---
 spring:
   config:
