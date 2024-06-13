@@ -40,5 +40,5 @@ hs_err_pid*
 
 */bin/*
 .metals/*
-
+**/out/
 conf.sh

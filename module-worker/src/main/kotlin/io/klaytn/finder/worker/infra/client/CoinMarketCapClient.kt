@@ -28,7 +28,7 @@ data class CoinPrice(
     val marketCap: BigDecimal,
     val marketCapDominance: BigDecimal,
     val percentChange24h: BigDecimal,
-    val volume24h: BigDecimal,
+    val volume24h: BigDecimal
 )
 
 class CoinMarketCapInterceptor : Interceptor {
