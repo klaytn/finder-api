@@ -1,6 +1,12 @@
 package io.klaytn.finder.interfaces.rest.api.view.mapper
 
+import com.nimbusds.jose.JWSAlgorithm
+import com.nimbusds.jose.JWSHeader
+import com.nimbusds.jose.crypto.MACSigner
+import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.SignedJWT
 import io.klaytn.commons.model.mapper.Mapper
+import io.klaytn.finder.config.ClientProperties
 import io.klaytn.finder.domain.common.KaiaUserEmailAuthType
 import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.KaiaUser
@@ -9,7 +15,9 @@ import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupVi
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import java.security.MessageDigest
 import java.time.Instant
+import java.util.*
 
 @Component
 class KaiaUserSignupViewMapper(private val passwordEncoder: PasswordEncoder) : Mapper<KaiaUserSignupView, KaiaUser> {
@@ -43,17 +51,41 @@ class KaiaUserViewMapper() : Mapper<KaiaUser, KaiaUserView> {
 }
 
 @Component
-class KaiaUserEmailAuthMapper() : Mapper<KaiaUser, KaiaUserEmailAuth> {
+class KaiaUserEmailAuthMapper(private val clientProperties: ClientProperties) : Mapper<KaiaUser, KaiaUserEmailAuth> {
+    private val jwtSecret = clientProperties.keys["jwt-secret"]!!
+
     override fun transform(source: KaiaUser): KaiaUserEmailAuth {
+        val email = source.email
+        val userId = source.id
+
         val authType = KaiaUserEmailAuthType.SIGNUP
-        val jwtToken = "" //TODO
+        val secretKey = jwtSecret.toSHA256()
+        val currentTime = Date(Instant.now().toEpochMilli())
+        val expirationTime = Date(Instant.now().toEpochMilli() + 1000 * 60 * 60)
+
+        val payload = JWTClaimsSet.Builder()
+            .claim("userId", userId)
+            .claim("email", email)
+            .issueTime(currentTime)
+            .expirationTime(expirationTime)
+            .build()
+
+        val signedJWT = SignedJWT(JWSHeader(JWSAlgorithm.HS256), payload)
+        signedJWT.sign(MACSigner(secretKey))
+        val jwtToken = signedJWT.serialize()
 
         return KaiaUserEmailAuth(
-            email = source.email,
-            userId = source.id,
-            authType = authType,
-            jwtToken = jwtToken,
+            email,
+            userId,
+            authType,
+            jwtToken,
             isVerified = false
         )
+    }
+
+    fun String.toSHA256(): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(this.toByteArray(Charsets.UTF_8))
+        return digest.fold("") { str, it -> str + "%02x".format(it) }
     }
 }

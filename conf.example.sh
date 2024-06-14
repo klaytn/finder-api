@@ -47,3 +47,5 @@ export PAPI_API_BAOBAB_ENDPOINT=
 export CMC_PRO_API_KEY=
 
 export SENDGRID_API_KEY=
+
+export JWT_SECRET=

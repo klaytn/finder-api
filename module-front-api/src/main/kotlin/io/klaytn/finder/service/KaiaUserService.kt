@@ -15,6 +15,7 @@ import com.nimbusds.jwt.SignedJWT
 import io.klaytn.finder.config.ClientProperties
 import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.KaiaUser
+import io.klaytn.finder.domain.mysql.set1.KaiaUserEmailAuth
 import io.klaytn.finder.domain.mysql.set1.KaiaUserEmailAuthRepository
 import io.klaytn.finder.domain.mysql.set1.KaiaUserRepository
 import io.klaytn.finder.infra.exception.InvalidRequestException
@@ -42,75 +43,27 @@ class KaiaUserService(
     private val kaiaUserEmailAuthRepository: KaiaUserEmailAuthRepository
 ) {
     private val sendgridApiKey = clientProperties.keys["sendgrid-api-key"]!!
+    private val jwtSecret = clientProperties.keys["jwt-secret"]!!
 
-    fun signUp(kaiaUser: KaiaUserSignupView): Boolean {
-//        if (!isValidEmail(kaiaUser.email)) {
-//            throw InvalidRequestException("Invalid email address")
-//        }
-//
-//        if (kaiaUserRepository.existsByEmail(kaiaUser.email)) {
-//            throw InvalidRequestException("Email already exists")
-//        }
-//
-//        if (kaiaUserRepository.existsByName(kaiaUser.name)) {
-//            throw InvalidRequestException("Name already exists")
-//        }
-//
-//        val userEntity = kaiaUserSignupViewToMapper.transform(kaiaUser)
+    fun signUp(kaiaUserSignupData: KaiaUserSignupView): Boolean {
+        if (!isValidEmail(kaiaUserSignupData.email)) {
+            throw InvalidRequestException("Invalid email address")
+        }
 
-        if (kaiaUserRepository.existsByEmail(kaiaUser.email)) {
+        if (kaiaUserRepository.existsByEmail(kaiaUserSignupData.email)) {
             throw InvalidRequestException("Email already exists")
         }
 
-        if (kaiaUserRepository.existsByName(kaiaUser.name)) {
+        if (kaiaUserRepository.existsByName(kaiaUserSignupData.name)) {
             throw InvalidRequestException("Name already exists")
         }
 
-        val userEntity = kaiaUserSignupViewToMapper.transform(kaiaUser)
+        val kaiaUserData: KaiaUser = kaiaUserSignupViewToMapper.transform(kaiaUserSignupData)
+        val kaiaUserInfo: KaiaUser = kaiaUserRepository.save(kaiaUserData)
+        val userEmailAuthEntity = kaiaUserEmailAuthMapper.transform(kaiaUserInfo)
+        val kaiaUserEmailAuth: KaiaUserEmailAuth = kaiaUserEmailAuthRepository.save(userEmailAuthEntity)
 
-        kaiaUserRepository.save(userEntity)
-        // TODO: JWT Token for Email Verification
-        val userEmailAuthEntity = kaiaUserEmailAuthMapper.transform(userEntity)
-        kaiaUserEmailAuthRepository.save(userEmailAuthEntity)
-
-//        kaiaUserRepository.save(userEntity)
-        // TODO: Create Table for Email Verification
-        // TODO: JWT Token for Email Verification
-        val secretKey = "4nd9lnzhkvcnjt5yhtdiyjro6peajkanfvwfzjda"
-        val currentTime = Date(Instant.now().toEpochMilli())
-        val expirationTime = Date(Instant.now().toEpochMilli() + 1000 * 60 * 60)
-        val payload = JWTClaimsSet.Builder()
-            .claim("name", "stephen")
-            .claim("email", "stephen@bisonai.com")
-            .issueTime(currentTime)
-            .expirationTime(expirationTime)
-            .build()
-
-        val signedJWT = SignedJWT(JWSHeader(JWSAlgorithm.HS256), payload)
-        signedJWT.sign(MACSigner(secretKey))
-        val jwt = signedJWT.serialize()
-        println("JWT: $jwt")
-
-        val parseJWT = SignedJWT.parse(jwt)
-        val baseString = "exampleStringForSecretKey"
-        val hashedKey = baseString.toSHA256()
-        println("Signed JWT: $parseJWT")
-        if (!parseJWT.verify(MACVerifier(hashedKey))) {
-            println("Invalid JWT signature")
-        }
-
-        if (parseJWT.verify(MACVerifier(secretKey))) {
-            println("Valid JWT issuer")
-        }
-
-        // 클레임 검증
-        val claims = parseJWT.jwtClaimsSet
-        println("Claims: $claims")
-        val cTime = Date()
-        if (claims.expirationTime.before(cTime)) {
-            println("Token expired")
-        }
-//        this.sendBySendGrid(kaiaUser.email)
+        this.sendBySendGrid(kaiaUserEmailAuth.email, kaiaUserEmailAuth.jwtToken)
 
         return true
     }
@@ -122,14 +75,17 @@ class KaiaUserService(
     }
 
     //  TODO: email template
-    fun sendBySendGrid(email: String) {
+    //  TODO: redirect to frontend ??
+    fun sendBySendGrid(email: String, jwtToken: String) {
         val from = Email("noreply@klaytnfinder.io")
         val subject = "Sending with SendGrid is Fun"
         val to = Email(email)
-        val content = Content("text/plain", "and easy to do anywhere, even with Kotlin stephen jayce top")
+        val content = Content("text/plain", "Click Here {FRONT_END_URL}?jwtToken=$jwtToken")
+
         val mail = Mail(from, subject, to, content)
         val sg = SendGrid(sendgridApiKey)
         val request = Request()
+
         try {
             request.method = Method.POST
             request.endpoint = "mail/send"
@@ -152,29 +108,44 @@ class KaiaUserService(
     }
 
     fun verifyEmail(jwtToken: String): Boolean {
-        // TODO: JWT Token Validation
-//        val claims = JwtUtils.parseJwtToken(jwtToken)
-//            ?: throw IllegalArgumentException("Invalid JWT token")
-//        val userId = claims["userId"] as Long ?: throw IllegalArgumentException("Invalid JWT token")
-//        val email = claims["email"] as String ?: throw IllegalArgumentException("Invalid JWT token")
-        // TODO: Remove Dummy data
-        val userId = 1L
-        val email = ""
-
-        val kaiaUser = kaiaUserRepository.findById(userId)
-            .orElseThrow { InvalidRequestException("User not found") }
-
-        if (kaiaUser.email != email) {
-            throw InvalidRequestException("Invalid email")
+        val parseJWT = SignedJWT.parse(jwtToken)
+        val hashedKey = jwtSecret.toSHA256()
+        if (!parseJWT.verify(MACVerifier(hashedKey))) {
+            throw InvalidRequestException("Invalid JWT token")
         }
 
-        kaiaUser.status = KaiaUserType.ACTIVE
-        kaiaUserRepository.save(kaiaUser)
+        val claims = parseJWT.jwtClaimsSet
+        val cTime = Date()
+        if (claims.expirationTime.before(cTime)) {
+            throw InvalidRequestException("Expired JWT token")
+        }
+
+        val userId = claims.getLongClaim("userId")
+        val email = claims.getStringClaim("email")
 
         val kaiaUserEmailAuth = kaiaUserEmailAuthRepository.findByJwtToken(jwtToken)
             ?: throw InvalidRequestException("Invalid token")
-        val verify: Boolean = true
-        kaiaUserEmailAuthRepository.updateIsVerifiedByUserId(kaiaUserEmailAuth.userId, verify)
+        val kaiaUser: KaiaUser = kaiaUserRepository.findById(userId)
+            .orElseThrow { InvalidRequestException("User not found") }
+
+        when {
+            kaiaUser.email != email -> {
+                throw InvalidRequestException("Invalid email")
+            }
+
+            kaiaUser.status === KaiaUserType.ACTIVE -> {
+                throw InvalidRequestException("Already verified")
+            }
+
+            kaiaUser.status === KaiaUserType.DEACTIVATED -> {
+                throw InvalidRequestException("Deactivated user")
+            }
+        }
+
+        kaiaUserEmailAuthRepository.updateIsVerifiedByUserId(kaiaUserEmailAuth.userId, true)
+
+        kaiaUser.status = KaiaUserType.ACTIVE
+        kaiaUserRepository.save(kaiaUser)
 
         return true
     }

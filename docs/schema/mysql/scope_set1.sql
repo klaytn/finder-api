@@ -489,3 +489,16 @@ CREATE TABLE `kaia_user_login_history`
     PRIMARY KEY (`id`),
     UNIQUE KEY `ux_userid_timestamp` (`user_id`,`timestamp`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+CREATE TABLE `kaia_user_email_auth`
+(
+    `id`          bigint                                                        NOT NULL AUTO_INCREMENT,
+    `email`       varchar(255)                                                  NOT NULL,
+    `user_id`     bigint                                                                 DEFAULT NULL,
+    `auth_type`   int                                                           NOT NULL COMMENT '0: SIGNUP, 1: EMAIL_CHANGE',
+    `jwt_token`   varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+    `is_verified` tinyint                                                       NOT NULL DEFAULT '0' COMMENT '0:미인증, 1:인증',
+    `created_at`  datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'created date',
+    `updated_at`  datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) COMMENT 'modified date',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
