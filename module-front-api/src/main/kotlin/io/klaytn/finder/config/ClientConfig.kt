@@ -3,8 +3,11 @@ package io.klaytn.finder.config
 import io.klaytn.commons.utils.Jackson
 import io.klaytn.commons.utils.okhttp.OkHttpClientBuilder
 import io.klaytn.commons.utils.retrofit2.Retrofit2Creator
+import io.klaytn.finder.infra.client.CoinMarketCapClient
+import io.klaytn.finder.infra.client.CoinMarketCapInterceptor
 import io.klaytn.finder.infra.client.ContractCompilerClient
 import io.klaytn.finder.infra.client.KlaytnSquareClient
+import io.klaytn.finder.infra.client.KaiaSquareClient
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -28,6 +31,25 @@ class ClientConfig(
     fun klaytnSquareClient() =
         createClient(KlaytnSquareClient::class, clientProperties.urls["square-api"]!!)
 
+    @Bean
+    fun kaiaSquareClient() =
+        createClient(KaiaSquareClient::class, clientProperties.urls["square-api"]!!)
+
+    @Bean
+    fun coinMarketCapClient() =
+        createClient(
+            CoinMarketCapClient::class,
+            clientProperties.urls["coin-market-cap"]!!,
+            okHttpClient(
+                interceptor = CoinMarketCapInterceptor(),
+                requestHeaders =
+                mapOf(
+                    "X-CMC_PRO_API_KEY" to
+                            clientProperties.keys["coin-market-cap"]!!
+                )
+            )
+        )
+
     private fun <T : Any> createClient(clazz: KClass<T>, url: String, okHttpClient: OkHttpClient = okHttpClient()) =
         Retrofit2Creator(okHttpClient, url, Jackson.mapper(), clazz).create()
 
@@ -50,6 +72,7 @@ class ClientConfig(
 data class ClientProperties(
     val http: ClientHttpProperties,
     val urls: Map<String, String> = mapOf(),
+    val keys: Map<String, String> = mapOf(),
 ) {
     data class ClientHttpProperties(
         val maxConnections: Int,

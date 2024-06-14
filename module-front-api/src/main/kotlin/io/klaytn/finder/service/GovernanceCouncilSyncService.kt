@@ -151,7 +151,6 @@ class GovernanceCouncilSyncService(
         allSquareIds: Set<Long>,
         newGovernanceCouncilContracts: List<GovernanceCouncilContract>,
         deleteGovernanceCouncilContracts: List<GovernanceCouncilContract>,
-
     ) {
         TransactionSynchronizationManager.registerSynchronization(
             object : TransactionSynchronization {

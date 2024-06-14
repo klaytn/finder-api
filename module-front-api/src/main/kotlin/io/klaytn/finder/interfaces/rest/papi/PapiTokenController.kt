@@ -26,7 +26,7 @@ import javax.validation.Valid
 
 @Profile(ServerMode.PRIVATE_API_MODE)
 @RestController
-@Tag(name= SwaggerConstant.TAG_PRIVATE)
+@Tag(name = SwaggerConstant.TAG_PRIVATE)
 class PapiTokenController(
     val tokenService: TokenService,
     val blockRangeService: BlockRangeService,
@@ -79,7 +79,8 @@ class PapiTokenController(
 
         return ScopePage.of(
             tokenService.getTokenTransfersByTokenAddress(
-                tokenAddress, blockRange, papiSimplePageRequest.toSimplePageRequest()),
+                tokenAddress, blockRange, papiSimplePageRequest.toSimplePageRequest()
+            ),
             tokenTransferToListViewMapper,
             blockRangeService.getBlockRangeCondition(blockRange, blockRangeIntervalType)
         )

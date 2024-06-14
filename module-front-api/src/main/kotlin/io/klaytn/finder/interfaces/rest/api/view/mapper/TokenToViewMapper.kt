@@ -26,6 +26,8 @@ class ContractToTokenItemViewMapper(
         val totalSupply = caverTotalSupply?.toBigDecimal() ?: source.totalSupply
         val burnAmount = source.burnAmount?.toBigDecimal()?.applyDecimal(source.decimal)
 
+
+
         return TokenItemView(
             info = ContractSummary.of(source)!!,
             type = source.contractType,

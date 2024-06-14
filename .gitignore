@@ -18,6 +18,7 @@ hs_err_pid*
 /.gradle/
 /.idea/
 /build/
+/out/
 /logs/
 /module-common/build/
 /module-domain/build/
@@ -27,6 +28,16 @@ hs_err_pid*
 /module-compiler-api/build/
 /module-common-api/build/
 /module-gateway/build/
+
+/module-common/out/
+/module-domain/out/
+/module-front-api/out/
+/module-open-api/out/
+/module-worker/out/
+/module-compiler-api/out/
+/module-common-api/out/
+/module-gateway/out/
+
 */bin/*
 .metals/*
 **/out/

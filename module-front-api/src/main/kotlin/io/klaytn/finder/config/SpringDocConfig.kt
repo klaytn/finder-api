@@ -9,6 +9,8 @@ import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.tags.Tag
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
 class SpringDocConfig {
@@ -36,5 +38,10 @@ class SpringDocConfig {
                     Tag().name(SwaggerConstant.TAG_PRIVATE_INFRA).description("APIs for internal infrastructure use"),
                 )
             )
+    }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        return BCryptPasswordEncoder()
     }
 }
