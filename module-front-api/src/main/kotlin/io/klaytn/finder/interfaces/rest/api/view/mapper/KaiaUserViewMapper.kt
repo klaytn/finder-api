@@ -5,7 +5,6 @@ import io.klaytn.finder.domain.common.KaiaUserEmailAuthType
 import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.KaiaUser
 import io.klaytn.finder.domain.mysql.set1.KaiaUserEmailAuth
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserEmailAuthView
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
 import org.springframework.security.crypto.password.PasswordEncoder
