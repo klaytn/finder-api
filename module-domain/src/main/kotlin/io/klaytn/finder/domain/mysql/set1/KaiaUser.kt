@@ -8,7 +8,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "kaia_users")
-data class KaiaUser (
+data class KaiaUser(
     @Column
     val name: String,
 
@@ -25,8 +25,8 @@ data class KaiaUser (
     val isSubscribed: Boolean,
 
     @Column(columnDefinition = "TINYINT")
-    val status: KaiaUserType,
+    var status: KaiaUserType,
 
     @Column
     val registerTimestamp: Int
-): BaseEntity()
+) : BaseEntity()

@@ -1,12 +1,18 @@
 package io.klaytn.finder.service
 
-import com.sendgrid.*
+import com.sendgrid.Method
+import com.sendgrid.Request
+import com.sendgrid.SendGrid
 import com.sendgrid.helpers.mail.Mail
-import com.sendgrid.helpers.mail.objects.*
+import com.sendgrid.helpers.mail.objects.Content
+import com.sendgrid.helpers.mail.objects.Email
 import io.klaytn.finder.config.ClientProperties
+import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.KaiaUser
+import io.klaytn.finder.domain.mysql.set1.KaiaUserEmailAuthRepository
 import io.klaytn.finder.domain.mysql.set1.KaiaUserRepository
 import io.klaytn.finder.infra.exception.InvalidRequestException
+import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserEmailAuthMapper
 import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserSignupViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignInView
@@ -14,15 +20,17 @@ import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupVi
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.regex.Pattern
 import java.io.IOException
+import java.util.regex.Pattern
 
 @Service
 class KaiaUserService(
     private val kaiaUserRepository: KaiaUserRepository,
     private val kaiaUserSignupViewToMapper: KaiaUserSignupViewMapper,
+    private val kaiaUserEmailAuthMapper: KaiaUserEmailAuthMapper,
     private val passwordEncoder: PasswordEncoder,
-    private val clientProperties: ClientProperties
+    private val clientProperties: ClientProperties,
+    private val kaiaUserEmailAuthRepository: KaiaUserEmailAuthRepository
 ) {
     private val sendgridApiKey = clientProperties.keys["sendgrid-api-key"]!!
 
@@ -42,8 +50,9 @@ class KaiaUserService(
         val userEntity = kaiaUserSignupViewToMapper.transform(kaiaUser)
 
         kaiaUserRepository.save(userEntity)
-        // TODO: Create Table for Email Verification
         // TODO: JWT Token for Email Verification
+        val userEmailAuthEntity = kaiaUserEmailAuthMapper.transform(userEntity)
+        kaiaUserEmailAuthRepository.save(userEmailAuthEntity)
 
         this.sendBySendGrid(kaiaUser.email)
 
@@ -73,12 +82,41 @@ class KaiaUserService(
         val kaiaUser: KaiaUser = kaiaUserRepository.findByName(kaiaUserSignIn.userName)
             ?: throw InvalidRequestException("User not found")
 
-        if(!this.verifyPassword(kaiaUserSignIn.password, kaiaUser.password)) {
+        if (!this.verifyPassword(kaiaUserSignIn.password, kaiaUser.password)) {
             throw InvalidRequestException("Invalid password")
         }
 
         return KaiaUserViewMapper().transform(kaiaUser)
     }
+
+    fun verifyEmail(jwtToken: String): Boolean {
+        // TODO: JWT Token Validation
+//        val claims = JwtUtils.parseJwtToken(jwtToken)
+//            ?: throw IllegalArgumentException("Invalid JWT token")
+//        val userId = claims["userId"] as Long ?: throw IllegalArgumentException("Invalid JWT token")
+//        val email = claims["email"] as String ?: throw IllegalArgumentException("Invalid JWT token")
+        // TODO: Remove Dummy data
+        val userId = 1L
+        val email = ""
+
+        val kaiaUser = kaiaUserRepository.findById(userId)
+            .orElseThrow { InvalidRequestException("User not found") }
+
+        if (kaiaUser.email != email) {
+            throw InvalidRequestException("Invalid email")
+        }
+
+        kaiaUser.status = KaiaUserType.ACTIVE
+        kaiaUserRepository.save(kaiaUser)
+
+        val kaiaUserEmailAuth = kaiaUserEmailAuthRepository.findByJwtToken(jwtToken)
+            ?: throw InvalidRequestException("Invalid token")
+        val verify: Boolean = true
+        kaiaUserEmailAuthRepository.updateIsVerifiedByUserId(kaiaUserEmailAuth.userId, verify)
+
+        return true
+    }
+
 
     private fun isValidEmail(email: String): Boolean {
         val emailPattern = Pattern.compile(
