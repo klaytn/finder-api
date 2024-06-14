@@ -17,7 +17,7 @@ class KaiaUserController(
     val kaiaUserService: KaiaUserService
 ) {
     @Operation(description = "Sign Up")
-    @PostMapping("/api/v1/kaia/users")
+    @PostMapping("/api/v1/kaia/users/sign-up")
     fun signUp(@RequestBody kaiaUser: KaiaUserSignupView) =
         kaiaUserService.signUp(kaiaUser)
 

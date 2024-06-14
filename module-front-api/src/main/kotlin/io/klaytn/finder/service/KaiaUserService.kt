@@ -6,6 +6,12 @@ import com.sendgrid.SendGrid
 import com.sendgrid.helpers.mail.Mail
 import com.sendgrid.helpers.mail.objects.Content
 import com.sendgrid.helpers.mail.objects.Email
+import com.nimbusds.jose.JWSAlgorithm
+import com.nimbusds.jose.JWSHeader
+import com.nimbusds.jose.crypto.MACSigner
+import com.nimbusds.jose.crypto.MACVerifier
+import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.SignedJWT
 import io.klaytn.finder.config.ClientProperties
 import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.KaiaUser
@@ -22,6 +28,9 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.io.IOException
 import java.util.regex.Pattern
+import java.security.MessageDigest
+import java.time.Instant
+import java.util.*
 
 @Service
 class KaiaUserService(
@@ -35,9 +44,19 @@ class KaiaUserService(
     private val sendgridApiKey = clientProperties.keys["sendgrid-api-key"]!!
 
     fun signUp(kaiaUser: KaiaUserSignupView): Boolean {
-        if (!isValidEmail(kaiaUser.email)) {
-            throw InvalidRequestException("Invalid email address")
-        }
+//        if (!isValidEmail(kaiaUser.email)) {
+//            throw InvalidRequestException("Invalid email address")
+//        }
+//
+//        if (kaiaUserRepository.existsByEmail(kaiaUser.email)) {
+//            throw InvalidRequestException("Email already exists")
+//        }
+//
+//        if (kaiaUserRepository.existsByName(kaiaUser.name)) {
+//            throw InvalidRequestException("Name already exists")
+//        }
+//
+//        val userEntity = kaiaUserSignupViewToMapper.transform(kaiaUser)
 
         if (kaiaUserRepository.existsByEmail(kaiaUser.email)) {
             throw InvalidRequestException("Email already exists")
@@ -54,9 +73,52 @@ class KaiaUserService(
         val userEmailAuthEntity = kaiaUserEmailAuthMapper.transform(userEntity)
         kaiaUserEmailAuthRepository.save(userEmailAuthEntity)
 
-        this.sendBySendGrid(kaiaUser.email)
+//        kaiaUserRepository.save(userEntity)
+        // TODO: Create Table for Email Verification
+        // TODO: JWT Token for Email Verification
+        val secretKey = "4nd9lnzhkvcnjt5yhtdiyjro6peajkanfvwfzjda"
+        val currentTime = Date(Instant.now().toEpochMilli())
+        val expirationTime = Date(Instant.now().toEpochMilli() + 1000 * 60 * 60)
+        val payload = JWTClaimsSet.Builder()
+            .claim("name", "stephen")
+            .claim("email", "stephen@bisonai.com")
+            .issueTime(currentTime)
+            .expirationTime(expirationTime)
+            .build()
+
+        val signedJWT = SignedJWT(JWSHeader(JWSAlgorithm.HS256), payload)
+        signedJWT.sign(MACSigner(secretKey))
+        val jwt = signedJWT.serialize()
+        println("JWT: $jwt")
+
+        val parseJWT = SignedJWT.parse(jwt)
+        val baseString = "exampleStringForSecretKey"
+        val hashedKey = baseString.toSHA256()
+        println("Signed JWT: $parseJWT")
+        if (!parseJWT.verify(MACVerifier(hashedKey))) {
+            println("Invalid JWT signature")
+        }
+
+        if (parseJWT.verify(MACVerifier(secretKey))) {
+            println("Valid JWT issuer")
+        }
+
+        // 클레임 검증
+        val claims = parseJWT.jwtClaimsSet
+        println("Claims: $claims")
+        val cTime = Date()
+        if (claims.expirationTime.before(cTime)) {
+            println("Token expired")
+        }
+//        this.sendBySendGrid(kaiaUser.email)
 
         return true
+    }
+
+    fun String.toSHA256(): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(this.toByteArray(Charsets.UTF_8))
+        return digest.fold("") { str, it -> str + "%02x".format(it) }
     }
 
     //  TODO: email template
