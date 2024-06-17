@@ -209,6 +209,20 @@ class KaiaUserService(
 
     }
 
+    fun loginHistory(): List<String> {
+        //TODO : get user from security context
+        //Fetch user information via redis
+        //Dummy data
+        val userName = "jayce"
+        val kaiaUser: KaiaUser = kaiaUserRepository.findByName(userName)
+            ?: throw InvalidRequestException("User not found")
+
+        val loginHistoryList: List<KaiaUserLoginHistory> =
+            kaiaUserLoginHistoryRepository.findTop5ByUserIdOrderByTimestampDesc(kaiaUser.id)
+
+        return loginHistoryList.map { it.timestamp.toString() }
+    }
+
 
     private fun isValidEmail(email: String): Boolean {
         val emailPattern = Pattern.compile(
