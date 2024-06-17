@@ -11,6 +11,8 @@ import io.klaytn.finder.domain.common.KaiaUserEmailAuthType
 import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.KaiaUser
 import io.klaytn.finder.domain.mysql.set1.KaiaUserEmailAuth
+import io.klaytn.finder.domain.mysql.set1.KaiaUserLoginHistory
+import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserAccountView
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -18,6 +20,9 @@ import org.springframework.stereotype.Component
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
 
 @Component
 class KaiaUserSignupViewMapper(private val passwordEncoder: PasswordEncoder) : Mapper<KaiaUserSignupView, KaiaUser> {
@@ -87,5 +92,35 @@ class KaiaUserEmailAuthMapper(private val clientProperties: ClientProperties) : 
         val md = MessageDigest.getInstance("SHA-256")
         val digest = md.digest(this.toByteArray(Charsets.UTF_8))
         return digest.fold("") { str, it -> str + "%02x".format(it) }
+    }
+}
+
+@Component
+class KaiaUserLoginHistoryMapper : Mapper<KaiaUser, KaiaUserLoginHistory> {
+    override fun transform(source: KaiaUser): KaiaUserLoginHistory {
+        val currentTimestamp = (System.currentTimeMillis() / 1000).toInt()
+
+        return KaiaUserLoginHistory(
+            userId = source.id,
+            timestamp = currentTimestamp
+        )
+    }
+}
+
+@Component
+class KaiaUserAccountViewMapper {
+    fun transform(user: KaiaUser, lastLoginHistory: KaiaUserLoginHistory?): KaiaUserAccountView {
+        val lastLogin = lastLoginHistory?.timestamp?.toUtcString() ?: "No recent login"
+        return KaiaUserAccountView(
+            name = user.name,
+            email = user.email,
+            lastLogin = lastLogin
+        )
+    }
+
+    fun Int.toUtcString(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        return sdf.format(Date(this.toLong() * 1000))
     }
 }

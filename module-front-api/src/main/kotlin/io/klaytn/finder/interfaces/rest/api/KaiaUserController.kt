@@ -30,4 +30,10 @@ class KaiaUserController(
     @GetMapping("/api/v1/kaia/users/verify-email")
     fun verifyEmail(@RequestParam jwtToken: String) =
         kaiaUserService.verifyEmail(jwtToken)
+
+    @Operation(description = "Account personal information")
+    @GetMapping("/api/v1/kaia/users/account")
+    fun account() =
+        kaiaUserService.account()
+
 }
