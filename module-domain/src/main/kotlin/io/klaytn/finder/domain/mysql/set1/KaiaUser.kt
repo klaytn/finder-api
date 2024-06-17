@@ -2,6 +2,7 @@ package io.klaytn.finder.domain.mysql.set1
 
 import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.BaseEntity
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -27,5 +28,9 @@ data class KaiaUser(
     var status: KaiaUserType,
 
     @Column
-    val registerTimestamp: Int
+    val registerTimestamp: Int,
+
+    @Column
+    var deletedAt: LocalDateTime? = null
+
 ) : BaseEntity()
