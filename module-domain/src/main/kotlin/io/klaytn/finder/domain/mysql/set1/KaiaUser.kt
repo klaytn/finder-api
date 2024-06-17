@@ -14,7 +14,7 @@ data class KaiaUser(
     val email: String,
 
     @Column
-    val password: String,
+    var password: String,
 
     @Column
     val profileImage: String?,

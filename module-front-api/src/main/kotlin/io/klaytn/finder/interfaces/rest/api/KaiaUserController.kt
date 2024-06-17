@@ -2,6 +2,7 @@ package io.klaytn.finder.interfaces.rest.api
 
 import io.klaytn.finder.infra.ServerMode
 import io.klaytn.finder.infra.web.swagger.SwaggerConstant
+import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserChangePasswordView
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignInView
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
 import io.klaytn.finder.service.KaiaUserService
@@ -35,5 +36,10 @@ class KaiaUserController(
     @GetMapping("/api/v1/kaia/users/account")
     fun account() =
         kaiaUserService.account()
+
+    @Operation(description = "Change password")
+    @PutMapping("/api/v1/kaia/users/change-password")
+    fun changePassword(@RequestBody kaiaUserChangePasswordView: KaiaUserChangePasswordView) =
+        kaiaUserService.changePassword(kaiaUserChangePasswordView)
 
 }

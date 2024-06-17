@@ -13,10 +13,7 @@ import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.*
 import io.klaytn.finder.infra.exception.InvalidRequestException
 import io.klaytn.finder.interfaces.rest.api.view.mapper.*
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserAccountView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignInView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
+import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.*
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.io.IOException
@@ -161,6 +158,33 @@ class KaiaUserService(
 
         val accountViewMapper = KaiaUserAccountViewMapper()
         return accountViewMapper.transform(kaiaUser, userLastLogin)
+    }
+
+    fun changePassword(kaiaUserChangePasswordView: KaiaUserChangePasswordView): Boolean {
+
+        val kaiaUser: KaiaUser = kaiaUserRepository.findByName(kaiaUserChangePasswordView.name)
+            ?: throw InvalidRequestException("User not found")
+
+
+        if (!passwordEncoder.matches(kaiaUserChangePasswordView.oldPassword, kaiaUser.password)) {
+            throw InvalidRequestException("Current password is incorrect")
+        }
+
+
+        if (kaiaUserChangePasswordView.newPassword != kaiaUserChangePasswordView.confirmPassword) {
+            throw InvalidRequestException("New password and confirmation password do not match")
+        }
+
+        //TODO: password policy
+        if (kaiaUserChangePasswordView.newPassword.length < 3) {
+            throw InvalidRequestException("New password must be at least 3 characters long")
+        }
+
+
+        kaiaUser.password = passwordEncoder.encode(kaiaUserChangePasswordView.newPassword)
+        kaiaUserRepository.save(kaiaUser)
+
+        return true
     }
 
 
