@@ -155,7 +155,6 @@ class KaiaUserService(
 
         val userLastLogin: KaiaUserLoginHistory? =
             kaiaUserLoginHistoryRepository.findTopByUserIdOrderByTimestampDesc(kaiaUser.id)
-        println("userLastLogin: $userLastLogin")
 
         val accountViewMapper = KaiaUserAccountViewMapper()
         return accountViewMapper.transform(kaiaUser, userLastLogin)
@@ -192,16 +191,13 @@ class KaiaUserService(
         val userName = deleteAccountView.name
         val password = deleteAccountView.password
 
-        // 사용자 이름으로 사용자 찾기
         val kaiaUser: KaiaUser = kaiaUserRepository.findByName(userName)
             ?: throw InvalidRequestException("User not found")
 
-        // 비밀번호 검증
         if (!passwordEncoder.matches(password, kaiaUser.password)) {
             throw InvalidRequestException("Incorrect password")
         }
 
-        // 사용자 계정 삭제
         kaiaUser.status = KaiaUserType.DEACTIVATED
         kaiaUser.deletedAt = LocalDateTime.now()
 
