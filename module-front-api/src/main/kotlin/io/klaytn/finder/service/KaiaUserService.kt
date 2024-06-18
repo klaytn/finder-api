@@ -1,37 +1,26 @@
 package io.klaytn.finder.service
 
+import com.nimbusds.jose.crypto.MACVerifier
+import com.nimbusds.jwt.SignedJWT
 import com.sendgrid.Method
 import com.sendgrid.Request
 import com.sendgrid.SendGrid
 import com.sendgrid.helpers.mail.Mail
 import com.sendgrid.helpers.mail.objects.Content
 import com.sendgrid.helpers.mail.objects.Email
-import com.nimbusds.jose.JWSAlgorithm
-import com.nimbusds.jose.JWSHeader
-import com.nimbusds.jose.crypto.MACSigner
-import com.nimbusds.jose.crypto.MACVerifier
-import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.SignedJWT
 import io.klaytn.finder.config.ClientProperties
 import io.klaytn.finder.domain.common.KaiaUserType
-import io.klaytn.finder.domain.mysql.set1.KaiaUser
-import io.klaytn.finder.domain.mysql.set1.KaiaUserEmailAuth
-import io.klaytn.finder.domain.mysql.set1.KaiaUserEmailAuthRepository
-import io.klaytn.finder.domain.mysql.set1.KaiaUserRepository
+import io.klaytn.finder.domain.mysql.set1.*
 import io.klaytn.finder.infra.exception.InvalidRequestException
-import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserEmailAuthMapper
-import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserSignupViewMapper
-import io.klaytn.finder.interfaces.rest.api.view.mapper.KaiaUserViewMapper
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignInView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
+import io.klaytn.finder.interfaces.rest.api.view.mapper.*
+import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.*
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.io.IOException
-import java.util.regex.Pattern
 import java.security.MessageDigest
-import java.time.Instant
+import java.time.LocalDateTime
 import java.util.*
+import java.util.regex.Pattern
 
 @Service
 class KaiaUserService(
@@ -40,7 +29,8 @@ class KaiaUserService(
     private val kaiaUserEmailAuthMapper: KaiaUserEmailAuthMapper,
     private val passwordEncoder: PasswordEncoder,
     private val clientProperties: ClientProperties,
-    private val kaiaUserEmailAuthRepository: KaiaUserEmailAuthRepository
+    private val kaiaUserEmailAuthRepository: KaiaUserEmailAuthRepository,
+    private val kaiaUserLoginHistoryRepository: KaiaUserLoginHistoryRepository
 ) {
     private val sendgridApiKey = clientProperties.keys["sendgrid-api-key"]!!
     private val jwtSecret = clientProperties.keys["jwt-secret"]!!
@@ -104,6 +94,11 @@ class KaiaUserService(
             throw InvalidRequestException("Invalid password")
         }
 
+        val loginHistoryMapper = KaiaUserLoginHistoryMapper()
+        val loginHistory = loginHistoryMapper.transform(kaiaUser)
+
+        kaiaUserLoginHistoryRepository.save(loginHistory)
+
         return KaiaUserViewMapper().transform(kaiaUser)
     }
 
@@ -148,6 +143,80 @@ class KaiaUserService(
         kaiaUserRepository.save(kaiaUser)
 
         return true
+    }
+
+    fun account(): KaiaUserAccountView {
+        //TODO : get user from security context
+        //Fetch user information via redis
+        //Dummy data
+        val userName = "stephen"
+        val kaiaUser: KaiaUser = kaiaUserRepository.findByName(userName)
+            ?: throw InvalidRequestException("User not found")
+
+        val userLastLogin: KaiaUserLoginHistory? =
+            kaiaUserLoginHistoryRepository.findTopByUserIdOrderByTimestampDesc(kaiaUser.id)
+
+        val accountViewMapper = KaiaUserAccountViewMapper()
+        return accountViewMapper.transform(kaiaUser, userLastLogin)
+    }
+
+    fun changePassword(kaiaUserChangePasswordView: KaiaUserChangePasswordView): Boolean {
+
+        val kaiaUser: KaiaUser = kaiaUserRepository.findByName(kaiaUserChangePasswordView.name)
+            ?: throw InvalidRequestException("User not found")
+
+
+        if (!passwordEncoder.matches(kaiaUserChangePasswordView.oldPassword, kaiaUser.password)) {
+            throw InvalidRequestException("Current password is incorrect")
+        }
+
+
+        if (kaiaUserChangePasswordView.newPassword != kaiaUserChangePasswordView.confirmPassword) {
+            throw InvalidRequestException("New password and confirmation password do not match")
+        }
+
+        //TODO: password policy
+        if (kaiaUserChangePasswordView.newPassword.length < 3) {
+            throw InvalidRequestException("New password must be at least 3 characters long")
+        }
+
+
+        kaiaUser.password = passwordEncoder.encode(kaiaUserChangePasswordView.newPassword)
+        kaiaUserRepository.save(kaiaUser)
+
+        return true
+    }
+
+    fun deleteAccount(deleteAccountView: KaiaUserDeleteAccountView) {
+        val userName = deleteAccountView.name
+        val password = deleteAccountView.password
+
+        val kaiaUser: KaiaUser = kaiaUserRepository.findByName(userName)
+            ?: throw InvalidRequestException("User not found")
+
+        if (!passwordEncoder.matches(password, kaiaUser.password)) {
+            throw InvalidRequestException("Incorrect password")
+        }
+
+        kaiaUser.status = KaiaUserType.DEACTIVATED
+        kaiaUser.deletedAt = LocalDateTime.now()
+
+        kaiaUserRepository.save(kaiaUser)
+
+    }
+
+    fun loginHistory(): List<String> {
+        //TODO : get user from security context
+        //Fetch user information via redis
+        //Dummy data
+        val userName = "jayce"
+        val kaiaUser: KaiaUser = kaiaUserRepository.findByName(userName)
+            ?: throw InvalidRequestException("User not found")
+
+        val loginHistoryList: List<KaiaUserLoginHistory> =
+            kaiaUserLoginHistoryRepository.findTop5ByUserIdOrderByTimestampDesc(kaiaUser.id)
+
+        return loginHistoryList.map { it.timestamp.toString() }
     }
 
 

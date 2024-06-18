@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface KaiaUserLoginHistoryRepository: BaseRepository<KaiaUserLoginHistory> {
+    fun findTopByUserIdOrderByTimestampDesc(userId: Long): KaiaUserLoginHistory?
+    fun findTop5ByUserIdOrderByTimestampDesc(userId: Long): List<KaiaUserLoginHistory>
 }
