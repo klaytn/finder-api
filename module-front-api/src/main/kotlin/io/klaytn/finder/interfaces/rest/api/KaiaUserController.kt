@@ -86,5 +86,4 @@ class KaiaUserController(
     @GetMapping("/api/v1/kaia/users/login-history")
     fun loginHistory(): List<String> =
         kaiaUserService.loginHistory()
-
 }

@@ -3,6 +3,7 @@ package io.klaytn.finder.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.klaytn.finder.infra.error.DefaultHandlerExceptionResolver
 import io.klaytn.finder.infra.error.ExceptionHandler
+import io.klaytn.finder.infra.web.interceptor.KaiaUserSessionInterceptor
 import io.klaytn.finder.infra.web.interceptor.MaintenanceInterceptor
 import io.klaytn.finder.infra.web.interceptor.UserSessionInterceptor
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -23,6 +24,7 @@ class WebMvcConfig(
     val localeChangeInterceptor: LocaleChangeInterceptor,
     val maintenanceInterceptor: MaintenanceInterceptor,
     val userSessionInterceptor: UserSessionInterceptor,
+    val kaiaUserSessionInterceptor: KaiaUserSessionInterceptor,
     val finderWebConfig: FinderWebConfig
 ) : WebMvcConfigurer {
     lateinit var handlerExceptionResolver: DefaultHandlerExceptionResolver
@@ -54,6 +56,10 @@ class WebMvcConfig(
         registry.apply {
             addInterceptor(maintenanceInterceptor).excludePathPatterns("/actuator/**")
             addInterceptor(userSessionInterceptor).addPathPatterns("/api/**")
+            addInterceptor(kaiaUserSessionInterceptor).addPathPatterns("/api/v1/kaia/users/**")
+                .excludePathPatterns("/api/v1/kaia/users/sign-in")
+                .excludePathPatterns("/api/v1/kaia/users/sign-up")
+                .excludePathPatterns("/api/v1/kaia/users/verify-email")
             addInterceptor(localeChangeInterceptor)
 
             val noCacheInterceptor = WebContentInterceptor()
