@@ -1,6 +1,7 @@
 package io.klaytn.finder.interfaces.rest.api
 
 import io.klaytn.finder.infra.ServerMode
+import io.klaytn.finder.infra.exception.InvalidRequestException
 import io.klaytn.finder.infra.web.swagger.SwaggerConstant
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.*
 import io.klaytn.finder.service.KaiaUserService
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.Cookie
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Profile(ServerMode.API_MODE)
@@ -27,14 +29,35 @@ class KaiaUserController(
     @PostMapping("/api/v1/kaia/users/sign-in")
     fun signIn(@RequestBody kaiaUser: KaiaUserSignInView, response: HttpServletResponse): ResponseEntity<KaiaUserView> {
         val (userView, sessionId) = kaiaUserService.signIn(kaiaUser)
-        //  TODO: path 설정
         val sessionCookie = Cookie("_KAIA.sessionId", sessionId).apply {
-            maxAge = 86400 // 1일
+            maxAge = 86400 // 1 Day
             isHttpOnly = true
             path = "/"
+            domain = "localhost"  //TODO: Domain Settings
         }
         response.addCookie(sessionCookie)
         return ResponseEntity.ok(userView)
+    }
+
+    @Operation(description = "Sign Out")
+    @PostMapping("/api/v1/kaia/users/sign-out")
+    fun signOut(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<Unit> {
+        val cookies = request.cookies ?: throw InvalidRequestException("No cookies present in the request")
+        val sessionCookie = cookies.firstOrNull { it.name == "_KAIA.sessionId" }
+            ?: throw InvalidRequestException("Session cookie not found")
+        val sessionKey = sessionCookie.value
+
+        kaiaUserService.signOut(sessionKey)
+
+        val expireSessionCookie = Cookie("_KAIA.sessionId", "").apply {
+            maxAge = 0
+            isHttpOnly = true
+            path = "/"
+            domain = "localhost"  //TODO: Domain Settings
+        }
+        response.addCookie(expireSessionCookie)
+
+        return ResponseEntity.noContent().build()
     }
 
 
