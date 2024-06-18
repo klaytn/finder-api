@@ -26,16 +26,14 @@ class KaiaUserSessionInterceptor(
         val sessionCookie = cookies.firstOrNull { it.name == "_KAIA.sessionId" }
             ?: throw InvalidRequestException("Session cookie not found")
         val sessionId = sessionCookie.value
-        println("sessionKey: $sessionId")
         val redisKey = redisKeyManager.chainKaiaUserSession(sessionId)
-        println("redisKey: $redisKey")
 
         if (!redisTemplate.hasKey(redisKey)) {
-            println("hi")
             val cookie = Cookie(sessionCookie.name, null).apply {
                 maxAge = 0
                 path = "/"
                 isHttpOnly = true
+                domain = "localhost"  //TODO: Domain Settings
             }
             response.addCookie(cookie)
             response.status = HttpServletResponse.SC_UNAUTHORIZED

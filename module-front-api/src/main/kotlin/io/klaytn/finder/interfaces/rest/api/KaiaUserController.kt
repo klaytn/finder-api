@@ -25,6 +25,11 @@ class KaiaUserController(
     fun signUp(@RequestBody kaiaUser: KaiaUserSignupView) =
         kaiaUserService.signUp(kaiaUser)
 
+    @Operation(description = "Verify Email")
+    @GetMapping("/api/v1/kaia/users/verify-email")
+    fun verifyEmail(@RequestParam jwtToken: String) =
+        kaiaUserService.verifyEmail(jwtToken)
+
     @Operation(description = "Sign In")
     @PostMapping("/api/v1/kaia/users/sign-in")
     fun signIn(@RequestBody kaiaUser: KaiaUserSignInView, response: HttpServletResponse): ResponseEntity<KaiaUserView> {
@@ -59,12 +64,6 @@ class KaiaUserController(
 
         return ResponseEntity.noContent().build()
     }
-
-
-    @Operation(description = "Verify Email")
-    @GetMapping("/api/v1/kaia/users/verify-email")
-    fun verifyEmail(@RequestParam jwtToken: String) =
-        kaiaUserService.verifyEmail(jwtToken)
 
     @Operation(description = "Account personal information")
     @GetMapping("/api/v1/kaia/users/account")
