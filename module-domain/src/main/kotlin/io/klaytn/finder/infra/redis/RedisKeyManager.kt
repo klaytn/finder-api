@@ -88,6 +88,6 @@ class RedisKeyManager(val chainProperties: ChainProperties) {
     // -- kaia users
     // -- --------------------------------------------------------------------------------------------------------------
 
-    fun chainKaiaUserSignIn(sessionId: String) =
+    fun chainKaiaUserSession(sessionId: String) =
         "$chainPrefix/user/session:$sessionId"
 }

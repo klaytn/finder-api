@@ -105,8 +105,8 @@ class KaiaUserService(
         )
         val sessionId = generateRandomSessionId()
 
-        redisTemplate.opsForHash<String, String>().putAll(redisKeyManager.chainKaiaUserSignIn(sessionId), userInfo)
-        redisTemplate.expire(redisKeyManager.chainKaiaUserSignIn(sessionId), 24, TimeUnit.HOURS)
+        redisTemplate.opsForHash<String, String>().putAll(redisKeyManager.chainKaiaUserSession(sessionId), userInfo)
+        redisTemplate.expire(redisKeyManager.chainKaiaUserSession(sessionId), 24, TimeUnit.HOURS)
 
         val loginHistoryMapper = KaiaUserLoginHistoryMapper()
         val loginHistory = loginHistoryMapper.transform(kaiaUser)
@@ -114,6 +114,10 @@ class KaiaUserService(
         kaiaUserLoginHistoryRepository.save(loginHistory)
 
         return Pair(KaiaUserViewMapper().transform(kaiaUser), sessionId)
+    }
+
+    fun signOut(sessionKey: String) {
+        redisTemplate.delete(redisKeyManager.chainKaiaUserSession(sessionKey))
     }
 
     fun verifyEmail(jwtToken: String): Boolean {
