@@ -12,14 +12,17 @@ import io.klaytn.finder.config.ClientProperties
 import io.klaytn.finder.domain.common.KaiaUserType
 import io.klaytn.finder.domain.mysql.set1.*
 import io.klaytn.finder.infra.exception.InvalidRequestException
+import io.klaytn.finder.infra.redis.RedisKeyManager
 import io.klaytn.finder.interfaces.rest.api.view.mapper.*
 import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.*
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.io.IOException
 import java.security.MessageDigest
 import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 @Service
@@ -30,7 +33,9 @@ class KaiaUserService(
     private val passwordEncoder: PasswordEncoder,
     private val clientProperties: ClientProperties,
     private val kaiaUserEmailAuthRepository: KaiaUserEmailAuthRepository,
-    private val kaiaUserLoginHistoryRepository: KaiaUserLoginHistoryRepository
+    private val kaiaUserLoginHistoryRepository: KaiaUserLoginHistoryRepository,
+    private val redisKeyManager: RedisKeyManager,
+    private val redisTemplate: RedisTemplate<String, String>,
 ) {
     private val sendgridApiKey = clientProperties.keys["sendgrid-api-key"]!!
     private val jwtSecret = clientProperties.keys["jwt-secret"]!!
@@ -86,7 +91,7 @@ class KaiaUserService(
         }
     }
 
-    fun signIn(kaiaUserSignIn: KaiaUserSignInView): KaiaUserView {
+    fun signIn(kaiaUserSignIn: KaiaUserSignInView): Pair<KaiaUserView, String> {
         val kaiaUser: KaiaUser = kaiaUserRepository.findByName(kaiaUserSignIn.userName)
             ?: throw InvalidRequestException("User not found")
 
@@ -94,12 +99,21 @@ class KaiaUserService(
             throw InvalidRequestException("Invalid password")
         }
 
+        val userInfo = mapOf(
+            "userId" to kaiaUser.id.toString(),
+            "userName" to kaiaUser.name
+        )
+        val sessionId = generateRandomSessionId()
+
+        redisTemplate.opsForHash<String, String>().putAll(redisKeyManager.chainKaiaUserSignIn(sessionId), userInfo)
+        redisTemplate.expire(redisKeyManager.chainKaiaUserSignIn(sessionId), 24, TimeUnit.HOURS)
+
         val loginHistoryMapper = KaiaUserLoginHistoryMapper()
         val loginHistory = loginHistoryMapper.transform(kaiaUser)
 
         kaiaUserLoginHistoryRepository.save(loginHistory)
 
-        return KaiaUserViewMapper().transform(kaiaUser)
+        return Pair(KaiaUserViewMapper().transform(kaiaUser), sessionId)
     }
 
     fun verifyEmail(jwtToken: String): Boolean {
@@ -229,5 +243,9 @@ class KaiaUserService(
 
     private fun verifyPassword(rawPassword: String, encryptedPassword: String): Boolean {
         return passwordEncoder.matches(rawPassword, encryptedPassword)
+    }
+
+    private fun generateRandomSessionId(): String {
+        return UUID.randomUUID().toString()
     }
 }

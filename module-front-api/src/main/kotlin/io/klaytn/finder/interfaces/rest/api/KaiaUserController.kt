@@ -2,15 +2,15 @@ package io.klaytn.finder.interfaces.rest.api
 
 import io.klaytn.finder.infra.ServerMode
 import io.klaytn.finder.infra.web.swagger.SwaggerConstant
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserChangePasswordView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserDeleteAccountView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignInView
-import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserSignupView
+import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.*
 import io.klaytn.finder.service.KaiaUserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.context.annotation.Profile
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.Cookie
+import javax.servlet.http.HttpServletResponse
 
 @Profile(ServerMode.API_MODE)
 @RestController
@@ -25,8 +25,18 @@ class KaiaUserController(
 
     @Operation(description = "Sign In")
     @PostMapping("/api/v1/kaia/users/sign-in")
-    fun signIn(@RequestBody kaiaUser: KaiaUserSignInView) =
-        kaiaUserService.signIn(kaiaUser)
+    fun signIn(@RequestBody kaiaUser: KaiaUserSignInView, response: HttpServletResponse): ResponseEntity<KaiaUserView> {
+        val (userView, sessionId) = kaiaUserService.signIn(kaiaUser)
+        //  TODO: path 설정
+        val sessionCookie = Cookie("_KAIA.sessionId", sessionId).apply {
+            maxAge = 86400 // 1일
+            isHttpOnly = true
+            path = "/"
+        }
+        response.addCookie(sessionCookie)
+        return ResponseEntity.ok(userView)
+    }
+
 
     @Operation(description = "Verify Email")
     @GetMapping("/api/v1/kaia/users/verify-email")

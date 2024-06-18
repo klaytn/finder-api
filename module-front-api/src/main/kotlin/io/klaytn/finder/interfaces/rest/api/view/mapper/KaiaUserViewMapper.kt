@@ -18,11 +18,9 @@ import io.klaytn.finder.interfaces.rest.api.view.model.kaiauser.KaiaUserView
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.TimeZone
 
 @Component
 class KaiaUserSignupViewMapper(private val passwordEncoder: PasswordEncoder) : Mapper<KaiaUserSignupView, KaiaUser> {

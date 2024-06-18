@@ -83,4 +83,11 @@ class RedisKeyManager(val chainProperties: ChainProperties) {
 
     fun workerRedisConsumerQueue(queueName: String) =
         "$workerPrefix/redis-consumer/$queueName"
+
+    // -- --------------------------------------------------------------------------------------------------------------
+    // -- kaia users
+    // -- --------------------------------------------------------------------------------------------------------------
+
+    fun chainKaiaUserSignIn(sessionId: String) =
+        "$chainPrefix/user/session:$sessionId"
 }
