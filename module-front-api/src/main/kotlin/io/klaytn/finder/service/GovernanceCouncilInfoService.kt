@@ -18,6 +18,8 @@ import io.klaytn.finder.infra.client.KaiaSquareGovernanceCouncilCommunity
 import io.klaytn.finder.infra.client.KaiaSquareGovernanceCouncilCommunityLink
 import io.klaytn.finder.infra.db.DbConstants
 import io.klaytn.finder.infra.utils.DateUtils
+import io.klaytn.finder.interfaces.rest.api.view.mapper.GovernanceCouncilToListViewMapper
+import io.klaytn.finder.interfaces.rest.api.view.model.governancecouncil.GovernanceCouncilWithCategoryView
 import io.klaytn.finder.service.governancecouncil.GovernanceCouncilCachedService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -292,4 +294,14 @@ class GovernanceCouncilInfoService(
                 null
             }
         }
+
+    fun getAll(): List<GovernanceCouncilWithCategoryView> {
+        val governanceCouncilInfo: List<GovernanceCouncilsInfo> = governanceCouncilsInfoRepository.findAll()
+        val governanceCouncilCategories: List<GovernanceCouncilCategories> = governanceCouncilCategoriesRepository.findAll()
+
+        val governanceListInfo = GovernanceCouncilToListViewMapper().transform(Pair(governanceCouncilInfo, governanceCouncilCategories))
+
+
+        return governanceListInfo
+    }
 }
