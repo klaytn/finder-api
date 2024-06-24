@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 class GovernanceCouncilController(
     val governanceCouncilInfoService: GovernanceCouncilInfoService
 ) {
-    //TODO : Newly Joined API
-    //TODO : Category - Governance Council
     @GetMapping("/api/v1/governance-councils")
     fun governanceCouncilInfo() = governanceCouncilInfoService.getAll()
-    //TODO : Detail API
-
 }

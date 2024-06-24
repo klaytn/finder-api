@@ -22,11 +22,11 @@ data class GovernanceCouncilView(
 
 @Schema
 data class GovernanceCouncilWithCategoryView(
-    @JsonProperty("square_id") val squareId: Long,
     val name: String,
     @JsonProperty("square_link") val squareLink: String,
     val thumbnail: String,
     @JsonProperty("total_staking") val totalStaking: String,
+    val joinedAt: LocalDateTime?,
     val apy: String,
     val description: String,
     val categories: List<GovernanceCouncilCategory>,
