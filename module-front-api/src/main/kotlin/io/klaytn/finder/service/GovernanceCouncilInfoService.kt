@@ -299,9 +299,6 @@ class GovernanceCouncilInfoService(
         val governanceCouncilInfo: List<GovernanceCouncilsInfo> = governanceCouncilsInfoRepository.findAll()
         val governanceCouncilCategories: List<GovernanceCouncilCategories> = governanceCouncilCategoriesRepository.findAll()
 
-        val governanceListInfo = GovernanceCouncilToListViewMapper().transform(Pair(governanceCouncilInfo, governanceCouncilCategories))
-
-
-        return governanceListInfo
+        return GovernanceCouncilToListViewMapper().transform(Pair(governanceCouncilInfo, governanceCouncilCategories))
     }
 }
