@@ -41,13 +41,8 @@ class GovernanceCouncilToListViewMapper(
         val governanceCouncilCategoriesMap = governanceCouncilCategoriesList.groupBy { it.squareId }
 
         return governanceCouncilInfoMap.map { (squareId, governanceCouncilInfo) ->
-            val governanceCouncilCategories =
-                governanceCouncilCategoriesMap[squareId]?.map {
-                    GovernanceCouncilCategory(
-                        it.categoryId,
-                        it.categoryName
-                    )
-                } ?: emptyList()
+            val governanceCouncilCategories = this.mapCategories(governanceCouncilCategoriesMap[squareId] ?: emptyList())
+
             GovernanceCouncilWithCategoryView(
                 name = governanceCouncilInfo.name,
                 squareLink = governanceCouncilInfo.squareLink,
@@ -60,4 +55,11 @@ class GovernanceCouncilToListViewMapper(
             )
         }
     }
+
+    private fun mapCategories(categories: List<GovernanceCouncilCategories>): List<GovernanceCouncilCategory> {
+        return categories.map {
+            GovernanceCouncilCategory(it.categoryId, it.categoryName)
+        }
+    }
+
 }
