@@ -296,9 +296,14 @@ class GovernanceCouncilInfoService(
         }
 
     fun getAll(): List<GovernanceCouncilWithCategoryView> {
-        val governanceCouncilInfo: List<GovernanceCouncilsInfo> = governanceCouncilsInfoRepository.findAll()
-        val governanceCouncilCategories: List<GovernanceCouncilCategories> = governanceCouncilCategoriesRepository.findAll()
+        try {
+            val governanceCouncilInfo: List<GovernanceCouncilsInfo> = governanceCouncilsInfoRepository.findAll()
+            val governanceCouncilCategories: List<GovernanceCouncilCategories> = governanceCouncilCategoriesRepository.findAll()
 
-        return GovernanceCouncilToListViewMapper().transform(Pair(governanceCouncilInfo, governanceCouncilCategories))
+            return GovernanceCouncilToListViewMapper().transform(Pair(governanceCouncilInfo, governanceCouncilCategories))
+        } catch (e: Exception) {
+            logger.error("Failed to fetch governance council data", e)
+            throw e
+        }
     }
 }
