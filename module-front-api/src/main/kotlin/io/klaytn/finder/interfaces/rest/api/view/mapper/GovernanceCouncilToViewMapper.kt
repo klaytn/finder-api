@@ -9,6 +9,7 @@ import io.klaytn.finder.interfaces.rest.api.view.model.governancecouncil.Governa
 import io.klaytn.finder.interfaces.rest.api.view.model.governancecouncil.GovernanceCouncilWithCategoryView
 import io.klaytn.finder.service.governancecouncil.GovernanceCouncilService
 import org.springframework.stereotype.Component
+import io.klaytn.commons.utils.logback.logger
 
 @Component
 class GovernanceCouncilToViewMapper(
@@ -34,6 +35,8 @@ class GovernanceCouncilToViewMapper(
 @Component
 class GovernanceCouncilToListViewMapper(
 ) : Mapper<Pair<List<GovernanceCouncilsInfo>, List<GovernanceCouncilCategories>>, List<GovernanceCouncilWithCategoryView>> {
+    private val logger = logger(this::class.java)
+
     override fun transform(source: Pair<List<GovernanceCouncilsInfo>, List<GovernanceCouncilCategories>>): List<GovernanceCouncilWithCategoryView> {
         val (governanceCouncilInfoList, governanceCouncilCategoriesList) = source
 
@@ -57,9 +60,14 @@ class GovernanceCouncilToListViewMapper(
     }
 
     private fun mapCategories(categories: List<GovernanceCouncilCategories>): List<GovernanceCouncilCategory> {
-        return categories.map {
-            GovernanceCouncilCategory(it.categoryId, it.categoryName)
-        }
+        return try {
+                 categories.map {
+                GovernanceCouncilCategory(it.categoryId, it.categoryName)
+                    }
+             } catch (e: Exception) {
+                logger.error("Error mapping categories", e)
+              emptyList()
+             }
     }
 
 }
