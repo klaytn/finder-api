@@ -70,9 +70,9 @@ class ContractToTokenListWithPriceInfoViewMapper(private val tokenTimeSeriesRepo
                     priceInUSD = latestTimeSeries?.price?.toDoubleOrNull() ?: 0.0,
                     changeRate = latestTimeSeries?.changeRate?.toDoubleOrNull() ?: 0.0,
                     volume24h = latestTimeSeries?.volume?.toDoubleOrNull() ?: 0.0,
-                    circulatingMarketCap = 0.0, // CirculatingMarketCap=CirculatingSupply * CurrentPrice
+                    circulatingMarketCap = latestTimeSeries?.circulatingMarketCap?.toDoubleOrNull() ?: 0.0,
                     onChainMarketCap = latestTimeSeries?.onChainMarketCap?.toDoubleOrNull() ?: 0.0,
-                    holders = 0
+                    holders = contract.holderCount ?: 0
                 )
             )
         }
