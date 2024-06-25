@@ -18,6 +18,7 @@ data class CoinPriceInfo(
     val id: Int,
     val name: String,
     val symbol: String,
+    val circulatingsupply: String,
     val price: String,
     val volume24h: String,
     val percentchange24h: String,
@@ -31,16 +32,58 @@ class CoinMarketCapInterceptor : Interceptor {
         val response = chain.proceed(request)
         val json = response.body?.string() ?: "{}"
         val tree = mapper.readTree(json).at("/data")
+
         val coinInfoList = tree.fields().asSequence().map { entry ->
             val node = entry.value
+            val circulatingsupply = node.at("/circulating_supply").asText().takeIf { it.isNotEmpty() }?.let {
+                try {
+                    BigDecimal(it).toPlainString()
+                } catch (e: NumberFormatException) {
+                    "0"
+                }
+            } ?: "0"
+
+            val price = node.at("/quote/USD/price").asText().takeIf { it.isNotEmpty() }?.let {
+                try {
+                    BigDecimal(it).toPlainString()
+                } catch (e: NumberFormatException) {
+                    "0"
+                }
+            } ?: "0"
+
+            val volume24h = node.at("/quote/USD/volume_24h").asText().takeIf { it.isNotEmpty() }?.let {
+                try {
+                    BigDecimal(it).toPlainString()
+                } catch (e: NumberFormatException) {
+                    "0"
+                }
+            } ?: "0"
+
+            val percentchange24h = node.at("/quote/USD/percent_change_24h").asText().takeIf { it.isNotEmpty() }?.let {
+                try {
+                    BigDecimal(it).toPlainString()
+                } catch (e: NumberFormatException) {
+                    "0"
+                }
+            } ?: "0"
+
+            val marketcap = node.at("/quote/USD/market_cap").asText().takeIf { it.isNotEmpty() }?.let {
+                try {
+                    BigDecimal(it).toPlainString()
+                } catch (e: NumberFormatException) {
+                    "0"
+                }
+            } ?: "0"
+
             CoinPriceInfo(
                 id = node.at("/id").asInt(),
                 name = node.at("/name").asText(),
                 symbol = node.at("/symbol").asText(),
-                price = BigDecimal(node.at("/quote/USD/price").asText()).toPlainString(),
-                volume24h = BigDecimal(node.at("/quote/USD/volume_24h").asText()).toPlainString(),
-                percentchange24h = BigDecimal(node.at("/quote/USD/percent_change_24h").asText()).toPlainString(),
-                marketcap = BigDecimal(node.at("/quote/USD/market_cap").asText()).toPlainString()
+                circulatingsupply,
+                price,
+                volume24h,
+                percentchange24h,
+                marketcap
             )
         }.toList()
 

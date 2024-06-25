@@ -19,10 +19,10 @@ class CoinMarketCapService(
     fun getTokenPriceInfo(): Boolean {
         val tokenInfoWithCmcId = tokenInfoRepository.findByCmcIdIsNotNull()
         val cmcIdsString = tokenInfoWithCmcId.map { it.cmcId }.joinToString(separator = ",")
-
         val tokenPriceInfoMap =
             coinMarketCapClient.getTokenPriceInfo(cmcIdsString).orElseThrow { IllegalStateException() }
                 .associateBy { it.id }
+
         val klayPrice = tokenPriceInfoMap[4256]?.price?.toBigDecimal() ?: BigDecimal.ZERO
 
         val contractList = tokenInfoWithCmcId.map { it.contractAddress }
@@ -33,7 +33,9 @@ class CoinMarketCapService(
             val tokenPriceInfo = tokenPriceInfoMap[tokenInfo.cmcId]
 
             val onChainMarketCap =
-                (contract?.totalSupply?.multiply(tokenPriceInfo?.price?.toBigDecimal() ?: BigDecimal.ZERO)).toString()
+                (contract?.totalSupply?.multiply(tokenPriceInfo?.price?.toBigDecimalOrNull() ?: BigDecimal.ZERO)).toString()
+            val circulatingMarketCap =
+                ((tokenPriceInfo?.circulatingsupply?.toBigDecimalOrNull() ?: BigDecimal.ZERO).multiply(tokenPriceInfo?.price?.toBigDecimalOrNull() ?: BigDecimal.ZERO)).toPlainString()
 
             if (contract != null && tokenPriceInfo != null) {
                 val tokenPrice = tokenPriceInfo.price.toBigDecimal() ?: BigDecimal.ZERO
@@ -53,6 +55,7 @@ class CoinMarketCapService(
                     volume = tokenPriceInfo.volume24h,
                     marketCap = tokenPriceInfo.marketcap,
                     onChainMarketCap,
+                    circulatingMarketCap,
                     timestamp = (System.currentTimeMillis() / 1000).toInt(),
                 )
             } else {

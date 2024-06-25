@@ -9,6 +9,8 @@ import io.klaytn.finder.interfaces.rest.api.view.model.nft.NftListView
 import io.klaytn.finder.interfaces.rest.api.view.model.token.TokenListView
 import io.klaytn.finder.interfaces.rest.api.view.mapper.ContractToNftListViewMapper
 import io.klaytn.finder.interfaces.rest.api.view.mapper.ContractToTokenListViewMapper
+import io.klaytn.finder.interfaces.rest.api.view.mapper.ContractToTokenListWithPriceInfoViewMapper
+import io.klaytn.finder.interfaces.rest.api.view.model.token.TokenListWithPriceInfoView
 import io.klaytn.finder.service.ContractService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -29,6 +31,7 @@ class ContractSearchController(
     val contractService: ContractService,
     val contractToTokenListViewMapper: ContractToTokenListViewMapper,
     val contractToNftListViewMapper: ContractToNftListViewMapper,
+    val contractToTokenListWithPriceInfoViewMapper: ContractToTokenListWithPriceInfoViewMapper,
 ) {
     @Operation(
         description = "Search for Token lists by Name or Symbol.",
@@ -62,10 +65,11 @@ class ContractSearchController(
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fromDate: LocalDate?,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) toDate: LocalDate?,
         @Valid contractSearchPageRequest: ContractSearchPageRequest,
-    ): ScopePage<TokenListView> {
+    ): ScopePage<TokenListWithPriceInfoView> {
         val contractSearchRequest =
             ContractSearchRequest.ofPageForToken(null, true, fromDate, toDate, contractSearchPageRequest)
-        return ScopePage.of(contractService.search(contractSearchRequest), contractToTokenListViewMapper)
+
+        return ScopePage.of(contractService.search(contractSearchRequest), contractToTokenListWithPriceInfoViewMapper)
     }
 
     @Operation(
