@@ -26,16 +26,16 @@ import javax.validation.Valid
 
 @Profile(ServerMode.API_MODE)
 @RestController
-@Tag(name= SwaggerConstant.TAG_PUBLIC)
+@Tag(name = SwaggerConstant.TAG_PUBLIC)
 class TokenController(
     val tokenService: TokenService,
     val blockRangeService: BlockRangeService,
-    val contractToTokenItemViewMapper: ContractToTokenItemViewMapper,
     val tokenTransferToListViewMapper: TokenTransferToListViewMapper,
     val tokenHolderToListViewMapper: TokenHolderToListViewMapper,
     val tokenBurnToListViewMapper: TokenBurnToListViewMapper,
     val finderHomeService: FinderHomeService,
-    val contractToTokenListWithPriceInfoViewMapper: ContractToTokenListWithPriceInfoViewMapper
+    val contractToTokenListWithPriceInfoViewMapper: ContractToTokenListWithPriceInfoViewMapper,
+    val contractToTokenItemWithPriceInfoViewMapper: ContractToTokenItemWithPriceInfoViewMapper,
 ) {
     @Operation(
         description = "Retrieve the list of tokens.",
@@ -52,7 +52,7 @@ class TokenController(
     )
     @GetMapping("/api/v1/tokens/{tokenAddress}")
     fun getToken(@PathVariable tokenAddress: String) =
-        tokenService.getToken(tokenAddress)?.let { contractToTokenItemViewMapper.transform(it) }
+        tokenService.getToken(tokenAddress)?.let { contractToTokenItemWithPriceInfoViewMapper.transform(it) }
             ?: throw NotFoundTokenException()
 
     @Operation(

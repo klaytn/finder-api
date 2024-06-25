@@ -17,4 +17,16 @@ interface TokenTimeSeriesRepository : BaseRepository<TokenTimeSeries> {
     """, nativeQuery = true
     )
     fun findLatestBySymbols(@Param("symbols") symbols: List<String>): List<TokenTimeSeries>
+
+    @Query(
+        value = """
+    SELECT * FROM (
+        SELECT t.*, ROW_NUMBER() OVER (PARTITION BY t.symbol ORDER BY t.timestamp DESC) as rn
+        FROM token_time_series t
+        WHERE t.symbol = :symbol
+    ) subquery
+    WHERE subquery.rn = 1
+    """, nativeQuery = true
+    )
+    fun findLatestBySymbol(@Param("symbol") symbol: String): TokenTimeSeries
 }

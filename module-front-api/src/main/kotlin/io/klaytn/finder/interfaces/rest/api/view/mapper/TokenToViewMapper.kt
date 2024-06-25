@@ -40,6 +40,39 @@ class ContractToTokenItemViewMapper(
 }
 
 @Component
+class ContractToTokenItemWithPriceInfoViewMapper(
+    private val caverContractService: CaverContractService,
+    private val tokenTimeSeriesRepository: TokenTimeSeriesRepository,
+) : Mapper<Contract, TokenItemWithPriceInfoView> {
+    override fun transform(source: Contract): TokenItemWithPriceInfoView {
+        val caverTotalSupply = caverContractService.getTotalSupply(source.contractType, source.contractAddress)
+        val totalSupply = caverTotalSupply?.toBigDecimal() ?: source.totalSupply
+        val burnAmount = source.burnAmount?.toBigDecimal()?.applyDecimal(source.decimal)
+        val latestTimeSeries = source.symbol?.let { symbol ->
+            tokenTimeSeriesRepository.findLatestBySymbol(symbol)
+        }
+
+        return TokenItemWithPriceInfoView(
+            info = ContractSummary.of(source)!!,
+            type = source.contractType,
+            totalSupply = totalSupply.applyDecimal(source.decimal),
+            totalTransfers = source.totalTransfer,
+            officialSite = source.officialSite,
+            burnAmount = burnAmount,
+            totalBurns = source.totalBurn,
+            priceInfo = TokenPriceInfoView(
+                priceInUSD = latestTimeSeries?.price?.toDoubleOrNull() ?: 0.0,
+                changeRate = latestTimeSeries?.changeRate?.toDoubleOrNull() ?: 0.0,
+                volume24h = latestTimeSeries?.volume?.toDoubleOrNull() ?: 0.0,
+                circulatingMarketCap = latestTimeSeries?.circulatingMarketCap?.toDoubleOrNull() ?: 0.0,
+                onChainMarketCap = latestTimeSeries?.onChainMarketCap?.toDoubleOrNull() ?: 0.0,
+                holders = source.holderCount ?: 0
+            )
+        )
+    }
+}
+
+@Component
 class ContractToTokenListViewMapper : Mapper<Contract, TokenListView> {
     override fun transform(source: Contract): TokenListView {
         return TokenListView(
@@ -53,7 +86,8 @@ class ContractToTokenListViewMapper : Mapper<Contract, TokenListView> {
 }
 
 @Component
-class ContractToTokenListWithPriceInfoViewMapper(private val tokenTimeSeriesRepository: TokenTimeSeriesRepository) : ListMapper<Contract, TokenListWithPriceInfoView> {
+class ContractToTokenListWithPriceInfoViewMapper(private val tokenTimeSeriesRepository: TokenTimeSeriesRepository) :
+    ListMapper<Contract, TokenListWithPriceInfoView> {
     override fun transform(source: List<Contract>): List<TokenListWithPriceInfoView> {
         val symbols = source.mapNotNull { it.symbol }
         val latestTokenTimeSeries = tokenTimeSeriesRepository.findLatestBySymbols(symbols)
