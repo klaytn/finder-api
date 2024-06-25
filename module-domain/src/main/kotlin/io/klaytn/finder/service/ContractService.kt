@@ -47,6 +47,7 @@ class ContractService(
     ): Page<Contract> {
         val searchIdsPage = contractSearchClient.searchIds(contractSearchRequest)
         val contents = searchIdsPage.content.run { contractCachedService.getContracts(this) }
+
         return PageImpl(contents, contractSearchRequest.contractSearchPageRequest.pageRequest(), searchIdsPage.totalElements)
     }
 
@@ -57,8 +58,8 @@ class ContractService(
     ): Page<Contract> {
         val accountAddressPage = accountService.getAccountByContractDeployerAddress(
             contractDeployerAddress, contractTypes, simplePageRequest)
-
         val contracts = contractCachedService.getContracts(accountAddressPage.content.map { it.address })
+
         return PageImpl(contracts, simplePageRequest.pageRequest(), accountAddressPage.totalElements)
     }
 
@@ -98,9 +99,9 @@ class ContractService(
         val contractAddressPage = contractRepository.findAllByImplementationAddress(
             contractAddress, simplePageRequest.pageRequest(Sort.by(Sort.Order.desc("id"))))
         val contracts = contractCachedService.getContracts(contractAddressPage.content.map { it.contractAddress })
+
         return PageImpl(contracts, simplePageRequest.pageRequest(), contractAddressPage.totalElements)
     }
-
 
     /**
      * Uses the ContractCreatorSignature information to determine the owner information of the contractAddress.

@@ -6,6 +6,7 @@ import io.klaytn.finder.domain.mysql.set1.Contract
 import io.klaytn.finder.domain.mysql.set3.token.TokenBurn
 import io.klaytn.finder.domain.mysql.set3.token.TokenHolder
 import io.klaytn.finder.domain.mysql.set3.token.TokenTransfer
+import io.klaytn.finder.domain.mysql.set4.TokenTimeSeriesRepository
 import io.klaytn.finder.infra.utils.DateUtils
 import io.klaytn.finder.infra.utils.applyDecimal
 import io.klaytn.finder.interfaces.rest.api.view.model.contract.ContractSummary
@@ -25,8 +26,6 @@ class ContractToTokenItemViewMapper(
         val caverTotalSupply = caverContractService.getTotalSupply(source.contractType, source.contractAddress)
         val totalSupply = caverTotalSupply?.toBigDecimal() ?: source.totalSupply
         val burnAmount = source.burnAmount?.toBigDecimal()?.applyDecimal(source.decimal)
-
-
 
         return TokenItemView(
             info = ContractSummary.of(source)!!,
@@ -50,6 +49,33 @@ class ContractToTokenListViewMapper : Mapper<Contract, TokenListView> {
             totalBurns = source.totalBurn ?: 0L,
             burnAmount = source.burnAmount?.toBigDecimal()?.applyDecimal(source.decimal) ?: BigDecimal.ZERO
         )
+    }
+}
+
+@Component
+class ContractToTokenListWithPriceInfoViewMapper(private val tokenTimeSeriesRepository: TokenTimeSeriesRepository) : ListMapper<Contract, TokenListWithPriceInfoView> {
+    override fun transform(source: List<Contract>): List<TokenListWithPriceInfoView> {
+        val symbols = source.mapNotNull { it.symbol }
+        val latestTokenTimeSeries = tokenTimeSeriesRepository.findLatestBySymbols(symbols)
+
+        return source.map { contract ->
+            val latestTimeSeries = latestTokenTimeSeries.find { it.symbol == contract.symbol }
+            TokenListWithPriceInfoView(
+                info = ContractSummary.of(contract)!!,
+                totalSupply = contract.totalSupply.applyDecimal(contract.decimal),
+                totalTransfers = contract.totalTransfer,
+                totalBurns = contract.totalBurn ?: 0L,
+                burnAmount = contract.burnAmount?.toBigDecimal()?.applyDecimal(contract.decimal) ?: BigDecimal.ZERO,
+                priceInfo = TokenPriceInfoView(
+                    priceInUSD = latestTimeSeries?.price?.toDoubleOrNull() ?: 0.0,
+                    changeRate = latestTimeSeries?.changeRate?.toDoubleOrNull() ?: 0.0,
+                    volume24h = latestTimeSeries?.volume?.toDoubleOrNull() ?: 0.0,
+                    circulatingMarketCap = latestTimeSeries?.circulatingMarketCap?.toDoubleOrNull() ?: 0.0,
+                    onChainMarketCap = latestTimeSeries?.onChainMarketCap?.toDoubleOrNull() ?: 0.0,
+                    holders = contract.holderCount ?: 0
+                )
+            )
+        }
     }
 }
 

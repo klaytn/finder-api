@@ -31,18 +31,18 @@ class TokenController(
     val tokenService: TokenService,
     val blockRangeService: BlockRangeService,
     val contractToTokenItemViewMapper: ContractToTokenItemViewMapper,
-    val contractToTokenListViewMapper: ContractToTokenListViewMapper,
     val tokenTransferToListViewMapper: TokenTransferToListViewMapper,
     val tokenHolderToListViewMapper: TokenHolderToListViewMapper,
     val tokenBurnToListViewMapper: TokenBurnToListViewMapper,
-    val finderHomeService: FinderHomeService
+    val finderHomeService: FinderHomeService,
+    val contractToTokenListWithPriceInfoViewMapper: ContractToTokenListWithPriceInfoViewMapper
 ) {
     @Operation(
         description = "Retrieve the list of tokens.",
     )
     @GetMapping("/api/v1/tokens")
     fun getTokens(@Valid simplePageRequest: SimplePageRequest) =
-        ScopePage.of(tokenService.getVerifiedTokens(simplePageRequest), contractToTokenListViewMapper)
+        ScopePage.of(tokenService.getVerifiedTokens(simplePageRequest), contractToTokenListWithPriceInfoViewMapper)
 
     @Operation(
         description = "Retrieve specific token information.",

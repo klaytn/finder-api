@@ -33,5 +33,8 @@ data class TokenTimeSeries(
     val onChainMarketCap: String,
 
     @Column()
+    val circulatingMarketCap: String,
+
+    @Column()
     val timestamp: Int,
 ) : BaseEntity()
